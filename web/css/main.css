@@ -11,6 +11,10 @@ h1 {
     line-height: 30px;
 }
 
+.hasFailedJobs {
+  background-color: #FF5;
+} 
+
 .milestone {
     overflow: auto;
     background:#f5f5f5;

@@ -8,16 +8,16 @@ class Baseboard
 
     foreach($config['projects'] as $projectName => $project)
     {
-      $projectId = $project['basecamp-id'];
-      $basecampAPI = new basecampAPI($project['basecamp-url'], $project['basecamp-token']);
-      $milestones = array();
+      $basecampAPI = new basecampAPI(new curlConnexion($project['basecamp-url'], 'xml', $project['basecamp-token'], 'X'));
       
-      $tmpTodolists = $basecampAPI->get('projects/#{project_id}/todo_lists.xml', $projectId);
+      $tmpTodolists = $basecampAPI->get('projects/#{project_id}/todo_lists.xml', $project['basecamp-id']);
       if(is_null($tmpTodolists))
       {
         continue;
       }
   
+      $milestones = array();
+      
       foreach($tmpTodolists as $tmpTodolist)
       {
         if(is_array($tmpTodolist['milestone-id']))
@@ -30,7 +30,7 @@ class Baseboard
         // Ajout de la milestone si premier passage
         if(!array_key_exists($milestoneId, $milestones))
         {
-          $tmpMilestone = $basecampAPI->get('projects/#{project_id}/calendar_entries/#{id}.xml', $projectId, $milestoneId);
+          $tmpMilestone = $basecampAPI->get('projects/#{project_id}/calendar_entries/#{id}.xml', $project['basecamp-id'], $milestoneId);
       
           if(is_null($tmpMilestone) || $tmpMilestone['completed'] == 'true' || strtotime($tmpMilestone['start-at']) > strtotime('now'))
           {
@@ -122,11 +122,20 @@ class Baseboard
           }
         }
       }
-  
+      
+      $hasFailedJobs = false;
+      if(key_exists('hudson-url', $project))
+      {
+        $hudson = new hudsonAPI(new curlConnexion($project['hudson-url']));
+        $jobs = (key_exists('hudson-jobs', $project) && count($project['hudson-jobs']) > 0) ? $project['hudson-jobs'] : null;
+        $hasFailedJobs = $hudson->hasFailedHudsonJobs($jobs);
+      }
+      
       $projects [] = array(
         'name' => $projectName,
-        'id' => $projectId,
-        'milestones' => $milestones
+        'id' => $project['basecamp-id'],
+        'milestones' => $milestones,
+        'hasFailedJobs' => $hasFailedJobs
       );
     }
     
