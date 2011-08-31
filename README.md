@@ -1,1 +1,1 @@
-Basebard is a quick and dirty, but functional dashboard for Basecamp.
+Basebard is a quick and dirty, but functional dashboard for Basecamp and Hudson.
