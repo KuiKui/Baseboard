@@ -4,9 +4,9 @@ $(document).ready(function(){
   loadHudsonFails();
   loadTwitts();
 
-  setInterval(loadBasecampInfos, 5 * 60 * 1000);
-  setInterval(loadHudsonFails, 2 * 60 * 1000);
-  setInterval(loadTwitts, 2 * 60 * 1000);
+  setInterval(loadBasecampInfos, 10 * 60 * 1000);
+  setInterval(loadHudsonFails, 3 * 60 * 1000);
+  setInterval(loadTwitts, 5 * 60 * 1000);
 
   function loadBasecampInfos() {
     $.ajax({

@@ -8,3 +8,5 @@ projects:
 twitter:
   search: searchword
   count: max_twitts
+  team: ['member1_twitter_name', 'member2_twitter_name']
+  team-working-time-only: true

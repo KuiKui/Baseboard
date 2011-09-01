@@ -141,7 +141,12 @@ table.info tr th {
     text-align: center;
 }
 
-.twitt {
+.companyTwitts .twitt {
   background-color: #fab;
+  margin: 0 0 5px 0;
+}
+
+.teamTwitts .twitt {
+  background-color: #baf;
   margin: 0 0 5px 0;
 }

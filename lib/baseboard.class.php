@@ -160,31 +160,6 @@ class Baseboard
     return $total;
   }
   
-  public static function computeTwitts(array $config)
-  {
-    $twitts = array();
-    
-    if(!key_exists('twitter', $config) || !key_exists('search', $config['twitter']) || !key_exists('count', $config['twitter']))
-    {
-      return $twitts;
-    }
-    
-    $twitterAPI = new twitterAPI(new curlConnexion('http://search.twitter.com/'));
-    $tmpTwitts = $twitterAPI->get(sprintf('search.json?q=%s&result_type=recent&count=%s', urlencode($config['twitter']['search']), $config['twitter']['count']));
-    
-    foreach($tmpTwitts['results'] as $tmpTwitt)
-    {
-      $twitts[] = array(
-        'timestamp' => strtotime($tmpTwitt['created_at']),
-        'user'  => $tmpTwitt['from_user'],
-        'text'  => $tmpTwitt['text'],
-        'image' => $tmpTwitt['profile_image_url']
-      );
-    }
-    
-    return $twitts;
-  }
-  
   public static function computeHudsonFails(array $config)
   {
     $failedProjectIds = array();
@@ -204,4 +179,95 @@ class Baseboard
     }
     return $failedProjectIds;
   }
+
+  public static function computeCompanyTwitts(array $config)
+  {
+    $twitts = array();
+    
+    if(!key_exists('twitter', $config) || !key_exists('search', $config['twitter']) || !key_exists('count', $config['twitter']))
+    {
+      return $twitts;
+    }
+    
+    $twitterAPI = new twitterAPI(new curlConnexion('http://search.twitter.com/'));
+    $tmpTwitts = $twitterAPI->get(sprintf('search.json?q=%s&result_type=recent&count=%s', urlencode($config['twitter']['search']), $config['twitter']['count']));
+    
+    if(key_exists('error', $tmpTwitts) || count($tmpTwitts) == 0)
+    {
+      return $twitts;
+    }
+    
+    foreach($tmpTwitts['results'] as $tmpTwitt)
+    {
+      $twitts[] = array(
+        'timestamp' => strtotime($tmpTwitt['created_at']),
+        'user'  => $tmpTwitt['from_user'],
+        'text'  => $tmpTwitt['text'],
+        'image' => $tmpTwitt['profile_image_url']
+      );
+    }
+    
+    return $twitts;
+  }
+
+  public static function computeTeamTwitts(array $config)
+  {
+    $twitts = array();
+
+    if(!key_exists('twitter', $config) || !key_exists('team', $config['twitter']) || count($config['twitter']['team']) == 0)
+    {
+      return $twitts;
+    }
+    
+    $twitterAPI = new twitterAPI(new curlConnexion('http://api.twitter.com/1/'));
+    
+    foreach($config['twitter']['team'] as $memberName)
+    {
+      
+      $tmpTwitts = $twitterAPI->get(sprintf('statuses/user_timeline.json?include_entities=false&include_rts=false&screen_name=%s&count=5', $memberName));
+      
+      if(key_exists('error', $tmpTwitts) || count($tmpTwitts) == 0)
+      {
+        continue;
+      }
+
+      foreach($tmpTwitts as $tmpTwitt)
+      {
+        $twitts[] = array(
+          'timestamp' => strtotime($tmpTwitt['created_at']),
+          'user'  => $tmpTwitt['user']['screen_name'],
+          'text'  => $tmpTwitt['text'],
+          'image' => $tmpTwitt['user']['profile_image_url']
+        );
+      }
+    }
+
+    if(count($twitts) > 1)
+    {
+      usort($twitts, function ($a, $b) {
+        return ($a['timestamp'] < $b['timestamp']);
+      });
+    }
+    
+    if(key_exists('team-working-time-only', $config['twitter']) && $config['twitter']['team-working-time-only'] == 'true')
+    {
+      $validTwitts = array();
+      foreach($twitts as $twitt)
+      {
+        if(
+          date('w', $twitt['timestamp']) == 0 || date('w', $twitt['timestamp']) == 6
+          ||
+          date('G', $twitt['timestamp']) < 9 || date('G', $twitt['timestamp']) >= 18
+          )
+        {
+          continue;
+        }
+        $validTwitts[] = $twitt;
+      }
+      $twitts = $validTwitts;
+    }
+    
+    return $twitts;
+  }
+  
 }
