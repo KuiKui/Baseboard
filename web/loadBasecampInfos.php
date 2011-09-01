@@ -1,15 +1,10 @@
 <?php
-require_once dirname(__FILE__).'/../lib/vendor/Yaml/lib/sfYaml.php';
-require_once dirname(__FILE__).'/../lib/curlConnexion.class.php';
-require_once dirname(__FILE__).'/../lib/baseboard.class.php';
-require_once dirname(__FILE__).'/../lib/basecampAPI.class.php';
-require_once dirname(__FILE__).'/../lib/hudsonAPI.class.php';
+require_once dirname(__FILE__).'/../lib/includes.php';
 
 $projects = Baseboard::compute(sfYaml::load(dirname(__FILE__).'/../config/config.yml'));
 ?>
-
 <?php foreach($projects as $project):?>
-  <div class="project <?php if($project['hasFailedJobs']) echo 'hasFailedJobs'; ?>">
+  <div id="<?php echo $project['id']; ?>" class="project">
     <h1><?php echo $project['name']; ?></h1>
     <?php foreach($project['milestones'] as $milestone):?>
       <div class="milestone <?php if($milestone['outdated']) echo 'outdated'; ?>">

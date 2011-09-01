@@ -5,3 +5,6 @@ projects:
     basecamp-id: your_project_basecamp_id
     hudson-url: 'http://your_hudson_server/api/'
     hudson-jobs: ['job1', 'job2']
+twitter:
+  search: searchword
+  count: max_twitts

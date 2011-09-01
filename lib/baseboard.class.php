@@ -123,19 +123,10 @@ class Baseboard
         }
       }
       
-      $hasFailedJobs = false;
-      if(key_exists('hudson-url', $project))
-      {
-        $hudson = new hudsonAPI(new curlConnexion($project['hudson-url']));
-        $jobs = (key_exists('hudson-jobs', $project) && count($project['hudson-jobs']) > 0) ? $project['hudson-jobs'] : null;
-        $hasFailedJobs = $hudson->hasFailedHudsonJobs($jobs);
-      }
-      
       $projects [] = array(
         'name' => $projectName,
         'id' => $project['basecamp-id'],
         'milestones' => $milestones,
-        'hasFailedJobs' => $hasFailedJobs
       );
     }
     
@@ -167,5 +158,50 @@ class Baseboard
     }
     
     return $total;
+  }
+  
+  public static function computeTwitts(array $config)
+  {
+    $twitts = array();
+    
+    if(!key_exists('twitter', $config) || !key_exists('search', $config['twitter']) || !key_exists('count', $config['twitter']))
+    {
+      return $twitts;
+    }
+    
+    $twitterAPI = new twitterAPI(new curlConnexion('http://search.twitter.com/'));
+    $tmpTwitts = $twitterAPI->get(sprintf('search.json?q=%s&result_type=recent&count=%s', urlencode($config['twitter']['search']), $config['twitter']['count']));
+    
+    foreach($tmpTwitts['results'] as $tmpTwitt)
+    {
+      $twitts[] = array(
+        'timestamp' => strtotime($tmpTwitt['created_at']),
+        'user'  => $tmpTwitt['from_user'],
+        'text'  => $tmpTwitt['text'],
+        'image' => $tmpTwitt['profile_image_url']
+      );
+    }
+    
+    return $twitts;
+  }
+  
+  public static function computeHudsonFails(array $config)
+  {
+    $failedProjectIds = array();
+    
+    foreach($config['projects'] as $project)
+    {
+      $failedProjectIds[$project['basecamp-id']] = 0;
+      if(key_exists('hudson-url', $project))
+      {
+        $hudson = new hudsonAPI(new curlConnexion($project['hudson-url']));
+        $jobs = (key_exists('hudson-jobs', $project) && count($project['hudson-jobs']) > 0) ? $project['hudson-jobs'] : null;
+        if($hudson->hasFailedHudsonJobs($jobs))
+        {
+          $failedProjectIds[$project['basecamp-id']] = 1;
+        }
+      }
+    }
+    return $failedProjectIds;
   }
 }

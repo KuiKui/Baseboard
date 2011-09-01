@@ -140,3 +140,8 @@ table.info tr th {
     font-weight: bolder;
     text-align: center;
 }
+
+.twitt {
+  background-color: #fab;
+  margin: 0 0 5px 0;
+}
