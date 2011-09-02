@@ -150,3 +150,10 @@ table.info tr th {
   background-color: #baf;
   margin: 0 0 5px 0;
 }
+
+span.teammate {
+  padding: 2px 4px;
+  maring-right: 5px;
+  background-color: #ddd;
+  color: #333;
+}

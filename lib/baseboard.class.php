@@ -32,7 +32,12 @@ class Baseboard
         {
           $tmpMilestone = $basecampAPI->get('projects/#{project_id}/calendar_entries/#{id}.xml', $project['basecamp-id'], $milestoneId);
       
-          if(is_null($tmpMilestone) || $tmpMilestone['completed'] == 'true' || strtotime($tmpMilestone['start-at']) > strtotime('now'))
+          if(is_null($tmpMilestone) || is_array($tmpMilestone['start-at']) || is_array($tmpMilestone['deadline']))
+          {
+            continue;
+          }
+          
+          if($tmpMilestone['completed'] == 'true' || strtotime($tmpMilestone['start-at']) > strtotime('now'))
           {
             continue;
           }
@@ -52,7 +57,8 @@ class Baseboard
             'openedBug' => 0,
             'outdated' => false,
             'cotationGap' => 0,
-            'lateCssClass' => ''
+            'lateCssClass' => '',
+            'teammates' => array()
           );
         }
     
@@ -64,6 +70,7 @@ class Baseboard
         );
     
         $todoItems = $basecampAPI->get('todo_lists/#{todo_list_id}/todo_items.xml', $tmpTodolist['id']);
+        
         if(is_null($todoItems))
         {
           continue;
@@ -95,6 +102,14 @@ class Baseboard
           {
             $milestones[$milestoneId]['totalCotation'] += $cotation;
             $milestones[$milestoneId]['completedCotation'] += ($isCompleted) ? $cotation : 0;
+          }
+          
+          if(!$isCompleted)
+          {
+            if(key_exists('responsible-party-id', $todoItem) && key_exists($todoItem['responsible-party-id'], $config['team']))
+            {
+              $milestones[$milestoneId]['teammates'][] = $config['team'][$todoItem['responsible-party-id']];
+            }
           }
         }
     

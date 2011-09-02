@@ -10,3 +10,7 @@ twitter:
   count: max_twitts
   team: ['member1_twitter_name', 'member2_twitter_name']
   team-working-time-only: true
+team:
+  _member1_basecamp_user_id_:
+    name: member1_displayed_name
+    twitter-display-name: member1_twitter_name

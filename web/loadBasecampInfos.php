@@ -20,6 +20,16 @@ $projects = Baseboard::compute(sfYaml::load(dirname(__FILE__).'/../config/config
               <td><div class="bug"><?php echo $milestone['openedBug'] ?></div></td>
             </tr>
           <?php endif; ?>
+          <?php if(count($milestone['teammates']) > 0): ?>
+            <tr>
+              <th>Equipe</th>
+              <td>
+                <?php foreach($milestone['teammates'] as $teammate):?>
+                  <span class="teammate"><?php echo $teammate['name'] ?></span>
+                <?php endforeach; ?>
+              </td>
+            </tr>
+          <?php endif; ?>
         </table>
       </div>
     <?php endforeach; ?>
