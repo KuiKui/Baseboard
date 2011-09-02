@@ -6,10 +6,13 @@ projects:
     hudson-url: 'http://your_hudson_server/api/'
     hudson-jobs: ['job1', 'job2']
 twitter:
-  search: searchword
-  count: max_twitts
-  team: ['member1_twitter_name', 'member2_twitter_name']
-  team-working-time-only: true
+  company:
+    enable: true
+    search: 'searchword'
+    count: max_twitts
+  team:
+    enable: true
+    working-time-only: true
 team:
   _member1_basecamp_user_id_:
     name: member1_displayed_name

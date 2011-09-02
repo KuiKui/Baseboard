@@ -199,13 +199,18 @@ class Baseboard
   {
     $twitts = array();
     
-    if(!key_exists('twitter', $config) || !key_exists('search', $config['twitter']) || !key_exists('count', $config['twitter']))
+    if(!key_exists('twitter', $config) || !key_exists('company', $config['twitter']) || !key_exists('enable', $config['twitter']['company']) || $config['twitter']['company']['enable'] != 'true')
+    {
+      return $twitts;
+    }
+    
+    if(!key_exists('twitter', $config) || !key_exists('search', $config['twitter']['company']) || !key_exists('count', $config['twitter']['company']))
     {
       return $twitts;
     }
     
     $twitterAPI = new twitterAPI(new curlConnexion('http://search.twitter.com/'));
-    $tmpTwitts = $twitterAPI->get(sprintf('search.json?q=%s&result_type=recent&count=%s', urlencode($config['twitter']['search']), $config['twitter']['count']));
+    $tmpTwitts = $twitterAPI->get(sprintf('search.json?q=%s&result_type=recent&count=%s', urlencode($config['twitter']['company']['search']), $config['twitter']['company']['count']));
     
     if(key_exists('error', $tmpTwitts) || count($tmpTwitts) == 0)
     {
@@ -229,17 +234,26 @@ class Baseboard
   {
     $twitts = array();
 
-    if(!key_exists('twitter', $config) || !key_exists('team', $config['twitter']) || count($config['twitter']['team']) == 0)
+    if(!key_exists('twitter', $config) || !key_exists('team', $config['twitter']) || !key_exists('enable', $config['twitter']['team']) || $config['twitter']['team']['enable'] != 'true')
     {
       return $twitts;
     }
     
+    if(!key_exists('team', $config) || count($config['team']) == 0)
+    {
+      return $twitts;
+    }
+
     $twitterAPI = new twitterAPI(new curlConnexion('http://api.twitter.com/1/'));
     
-    foreach($config['twitter']['team'] as $memberName)
+    foreach($config['team'] as $member)
     {
+      if(!key_exists('twitter-display-name', $member))
+      {
+        continue;
+      }
       
-      $tmpTwitts = $twitterAPI->get(sprintf('statuses/user_timeline.json?include_entities=false&include_rts=false&screen_name=%s&count=5', $memberName));
+      $tmpTwitts = $twitterAPI->get(sprintf('statuses/user_timeline.json?include_entities=false&include_rts=false&screen_name=%s&count=5', $member['twitter-display-name']));
       
       if(key_exists('error', $tmpTwitts) || count($tmpTwitts) == 0)
       {
@@ -264,7 +278,7 @@ class Baseboard
       });
     }
     
-    if(key_exists('team-working-time-only', $config['twitter']) && $config['twitter']['team-working-time-only'] == 'true')
+    if(key_exists('working-time-only', $config['twitter']['team']) && $config['twitter']['team']['working-time-only'] == 'true')
     {
       $validTwitts = array();
       foreach($twitts as $twitt)
