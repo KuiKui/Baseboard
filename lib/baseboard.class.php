@@ -44,7 +44,7 @@ class Baseboard
   
           $milestones[$milestoneId] = array(
             'id' => $tmpMilestone['id'],
-            'name' => $tmpMilestone['title'],
+            'name' => self::customStrip($tmpMilestone['title'], 40),
             'todoLists' => array(),
             'completed' => $tmpMilestone['completed'],
             'deadline' => $tmpMilestone['deadline'],
@@ -195,6 +195,18 @@ class Baseboard
     return $failedProjectIds;
   }
 
+  public static function customStrip($str, $length = null)
+  {
+    $retour = ucfirst(preg_replace('/^.*:[ ]+/i', '', trim($str)));
+    
+    if(!is_null($length) && is_int($length) && $length < strlen($retour))
+    {
+      $retour = substr($retour, 0, $length - 3) . "...";
+    }
+    
+    return $retour;
+  }
+  
   public static function computeCompanyTwitts(array $config)
   {
     $twitts = array();
