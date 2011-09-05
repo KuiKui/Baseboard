@@ -25,7 +25,7 @@ $projects = Baseboard::compute(sfYaml::load(dirname(__FILE__).'/../config/config
               <th>Equipe</th>
               <td>
                 <?php foreach($milestone['teammates'] as $teammate):?>
-                  <span class="teammate"><?php echo $teammate['name'] ?></span>
+                  <span class="teammate"><img src="<?php echo $teammate['avatar'] ?>" /><?php echo $teammate['name'] ?></span>
                 <?php endforeach; ?>
               </td>
             </tr>

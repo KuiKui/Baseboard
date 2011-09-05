@@ -17,3 +17,4 @@ team:
   _member1_basecamp_user_id_:
     name: member1_displayed_name
     twitter-display-name: member1_twitter_name
+    avatar: avatar_url
