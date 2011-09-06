@@ -127,11 +127,11 @@ class Baseboard
         $milestones[$milestoneId]['openedBug'] = $milestones[$milestoneId]['totalBug'] - $milestones[$milestoneId]['completedBug'];
         $milestones[$milestoneId]['outdated'] = (strtotime(date('c')) > strtotime($milestones[$milestoneId]['deadline'].' 23:59:59'));
     
-        $timeDiff = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $milestones[$milestoneId]['deadline']);
+        $timeDiff = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $milestones[$milestoneId]['deadline'], $config);
         if($timeDiff > 0)
         {
           $lastDay = new DateTime('-1 day');
-          $theoricalCompletedCotation = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $lastDay->format('Y-m-d') ) * $milestones[$milestoneId]['totalCotation'] / $timeDiff;
+          $theoricalCompletedCotation = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $lastDay->format('Y-m-d'), $config) * $milestones[$milestoneId]['totalCotation'] / $timeDiff;
           $milestones[$milestoneId]['cotationGap'] = $milestones[$milestoneId]['completedCotation'] - $theoricalCompletedCotation;
           $byDay = $milestones[$milestoneId]['totalCotation'] / $timeDiff;
           if($milestones[$milestoneId]['cotationGap'] <= 0 - $byDay)
@@ -156,7 +156,7 @@ class Baseboard
     return $projects;
   }
   
-  public static function getDiffTimestamp($start, $end)
+  public static function getDiffTimestamp($start, $end, $config = null)
   {
     $startDate = new DateTime(substr($start, 0, 10));
     $endDate = new DateTime(substr($end, 0, 10).' + 1 day');
@@ -167,14 +167,21 @@ class Baseboard
     $days = new DatePeriod($startDate, $interval, $endDate);
     foreach ( $days as $day ) {
       // Week End
-      if($day->format('w') == 0 || $day->format('w') == 6)
+      if(!is_null($config) && key_exists('general', $config) && key_exists('workdays', $config['general']))
       {
-        continue;
+        if(!in_array($day->format('w'), $config['general']['workdays']))
+        {
+          continue;
+        }
       }
+      
       // Holidays
-      if(in_array($day->format('d/m/y'), array('01/11/11', '11/11/11', '06/04/12', '09/04/12', '01/06/12', '08/06/12', '17/06/12', '15/08/12')))
+      if(!is_null($config) && key_exists('general', $config) && key_exists('holidays', $config['general']))
       {
-        continue;
+        if(in_array($day->format('d/m/y'), $config['general']['holidays']))
+        {
+          continue;
+        }
       }
       
       $total++;

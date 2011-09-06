@@ -1,3 +1,6 @@
+general:
+  workdays: [1, 2, 3, 4, 5]
+  holidays: ['25/12/12']
 projects:
   ProjectName:
     basecamp-url: 'https://xxx.basecamphq.com/'
