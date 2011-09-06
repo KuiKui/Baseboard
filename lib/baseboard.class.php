@@ -17,9 +17,15 @@ class Baseboard
       }
   
       $milestones = array();
+      $openedBugsCount = 0;
       
       foreach($tmpTodolists as $tmpTodolist)
       {
+        if(substr(strtolower($tmpTodolist['name']), 0, 3) == 'bug' && $tmpTodolist['complete'] == 'false')
+        {
+          $openedBugsCount += $tmpTodolist['uncompleted-count'];
+        }
+        
         if(is_array($tmpTodolist['milestone-id']))
         {
           continue; // pas de milestone reliée
@@ -97,6 +103,7 @@ class Baseboard
           {
             $milestones[$milestoneId]['totalBug']++;
             $milestones[$milestoneId]['completedBug'] += ($isCompleted) ? 1 : 0;
+            $openedBugsCount += ($isCompleted) ? 0 : 1;
           }
           else
           {
@@ -142,6 +149,7 @@ class Baseboard
         'name' => $projectName,
         'id' => $project['basecamp-id'],
         'milestones' => $milestones,
+        'openedBugsCount' => $openedBugsCount
       );
     }
     

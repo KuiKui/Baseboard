@@ -6,6 +6,7 @@ $projects = Baseboard::compute(sfYaml::load(dirname(__FILE__).'/../config/config
 <?php foreach($projects as $project):?>
   <div id="<?php echo $project['id']; ?>" class="project">
     <h1><?php echo $project['name']; ?></h1>
+    <div>Bugs ouverts : <?php echo $project['openedBugsCount']; ?></div>
     <?php foreach($project['milestones'] as $milestone):?>
       <div class="milestone <?php if($milestone['outdated']) echo 'outdated'; ?>">
         <h2><strong><?php echo $milestone['name']; ?></strong><span class="quote <?php echo $milestone['lateCssClass']; ?>"><?php echo sprintf("%s / %s", $milestone['completedCotation'], $milestone['totalCotation']); ?></span></h2>
