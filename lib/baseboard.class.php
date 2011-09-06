@@ -306,7 +306,8 @@ class Baseboard
           'timestamp' => strtotime($tmpTwitt['created_at']),
           'user'  => $tmpTwitt['user']['screen_name'],
           'text'  => $tmpTwitt['text'],
-          'image' => $tmpTwitt['user']['profile_image_url']
+          'image' => $tmpTwitt['user']['profile_image_url'],
+          'avatar' => (key_exists('avatar', $member)) ? $member['avatar'] : ''
         );
       }
     }
