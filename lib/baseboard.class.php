@@ -5,6 +5,12 @@ class Baseboard
   public static function compute(array $config)
   {
     $projects = array();
+    $availableTeammates = array();
+    
+    if(key_exists('team', $config))
+    {
+      $availableTeammates = $config['team'];
+    }
 
     foreach($config['projects'] as $projectName => $project)
     {
@@ -116,6 +122,10 @@ class Baseboard
             if(key_exists('responsible-party-id', $todoItem) && key_exists($todoItem['responsible-party-id'], $config['team']))
             {
               $milestones[$milestoneId]['teammates'][] = $config['team'][$todoItem['responsible-party-id']];
+              if(key_exists($todoItem['responsible-party-id'], $availableTeammates))
+              {
+                unset($availableTeammates[$todoItem['responsible-party-id']]);
+              }
             }
           }
         }
@@ -153,7 +163,10 @@ class Baseboard
       );
     }
     
-    return $projects;
+    return array(
+      'projects' => $projects,
+      'availableTeammates' => $availableTeammates
+    );
   }
   
   public static function getDiffTimestamp($start, $end, $config = null)

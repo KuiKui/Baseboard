@@ -1,7 +1,9 @@
 <?php
 require_once dirname(__FILE__).'/../lib/includes.php';
 
-$projects = Baseboard::compute(sfYaml::load(dirname(__FILE__).'/../config/config.yml'));
+$infos = Baseboard::compute(sfYaml::load(dirname(__FILE__).'/../config/config.yml'));
+$projects = $infos['projects'];
+$availableTeammates = $infos['availableTeammates'];
 ?>
 <?php foreach($projects as $project):?>
   <div id="<?php echo $project['id']; ?>" class="project">
@@ -36,3 +38,8 @@ $projects = Baseboard::compute(sfYaml::load(dirname(__FILE__).'/../config/config
     <?php endforeach; ?>
   </div>
 <?php endforeach; ?>
+<div>
+  <?php foreach($availableTeammates as $availableTeammate):?>
+    <span class="teammate"><img src="<?php echo $availableTeammate['avatar'] ?>" /><?php echo $availableTeammate['name'] ?></span>
+  <?php endforeach; ?>
+</div>
