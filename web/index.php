@@ -9,6 +9,7 @@ $config = sfYaml::load(dirname(__FILE__).'/../config/config.yml');
     <title>Baseboard</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet/less" type="text/css" href="css/main.less">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lobster" />
     <script src="js/less.js" type="text/javascript"></script>
     <script type="text/javascript" src="js/lib/vendor/jquery-1.6.2.min.js"></script>
     <script type="text/javascript" src="js/lib/vendor/jquery.animate-colors-min.js"></script>
