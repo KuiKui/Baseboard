@@ -7,7 +7,7 @@ class Baseboard
     $projects = array();
     $availableTeammates = array();
     
-    if(key_exists('team', $config))
+    if(isset($config['team']))
     {
       $availableTeammates = $config['team'];
     }
@@ -119,14 +119,14 @@ class Baseboard
           
           if(!$isCompleted)
           {
-            if(key_exists('responsible-party-id', $todoItem) && key_exists($todoItem['responsible-party-id'], $config['team']))
+            if(isset($todoItem['responsible-party-id']) && isset($config['team'][$todoItem['responsible-party-id']]))
             {
-              if(!key_exists($todoItem['responsible-party-id'], $milestones[$milestoneId]['teammates']))
+              if(!isset($milestones[$milestoneId]['teammates'][$todoItem['responsible-party-id']]))
               {
                 $milestones[$milestoneId]['teammates'][$todoItem['responsible-party-id']] = $config['team'][$todoItem['responsible-party-id']];
               }
               
-              if(key_exists($todoItem['responsible-party-id'], $availableTeammates))
+              if(isset($availableTeammates[$todoItem['responsible-party-id']]))
               {
                 unset($availableTeammates[$todoItem['responsible-party-id']]);
               }
@@ -184,21 +184,15 @@ class Baseboard
     $days = new DatePeriod($startDate, $interval, $endDate);
     foreach ( $days as $day ) {
       // Week End
-      if(!is_null($config) && key_exists('general', $config) && key_exists('workdays', $config['general']))
+      if(isset($config['general']['workdays']) && !in_array($day->format('w'), $config['general']['workdays']))
       {
-        if(!in_array($day->format('w'), $config['general']['workdays']))
-        {
           continue;
-        }
       }
       
       // Holidays
-      if(!is_null($config) && key_exists('general', $config) && key_exists('holidays', $config['general']))
+      if(isset($config['general']['holidays']) && in_array($day->format('d/m/y'), $config['general']['holidays']))
       {
-        if(in_array($day->format('d/m/y'), $config['general']['holidays']))
-        {
-          continue;
-        }
+        continue;
       }
       
       $total++;
@@ -214,10 +208,10 @@ class Baseboard
     foreach($config['projects'] as $project)
     {
       $failedProjectIds[$project['basecamp-id']] = 0;
-      if(key_exists('hudson-url', $project))
+      if(isset($project['hudson-url']))
       {
         $hudson = new hudsonAPI(new curlConnexion($project['hudson-url']));
-        $jobs = (key_exists('hudson-jobs', $project) && count($project['hudson-jobs']) > 0) ? $project['hudson-jobs'] : null;
+        $jobs = (isset($project['hudson-jobs']) && count($project['hudson-jobs']) > 0) ? $project['hudson-jobs'] : null;
         if($hudson->hasFailedHudsonJobs($jobs))
         {
           $failedProjectIds[$project['basecamp-id']] = 1;
@@ -243,12 +237,12 @@ class Baseboard
   {
     $twitts = array();
     
-    if(!key_exists('twitter', $config) || !key_exists('company', $config['twitter']) || !key_exists('enable', $config['twitter']['company']) || $config['twitter']['company']['enable'] != 'true')
+    if(!isset($config['twitter']['company']['enable']) || $config['twitter']['company']['enable'] != 'true')
     {
       return $twitts;
     }
     
-    if(!key_exists('twitter', $config) || !key_exists('search', $config['twitter']['company']) || !key_exists('count', $config['twitter']['company']))
+    if(!isset($config['twitter']['company']['search']) || !isset($config['twitter']['company']['count']))
     {
       return $twitts;
     }
@@ -256,7 +250,7 @@ class Baseboard
     $twitterAPI = new twitterAPI(new curlConnexion('http://search.twitter.com/'));
     $tmpTwitts = $twitterAPI->get(sprintf('search.json?q=%s&result_type=recent&count=%s', urlencode($config['twitter']['company']['search']), $config['twitter']['company']['count']));
     
-    if(key_exists('error', $tmpTwitts) || count($tmpTwitts) == 0)
+    if(isset($tmpTwitts['error']) || count($tmpTwitts) == 0)
     {
       return $twitts;
     }
@@ -278,12 +272,12 @@ class Baseboard
   {
     $twitts = array();
 
-    if(!key_exists('twitter', $config) || !key_exists('team', $config['twitter']) || !key_exists('enable', $config['twitter']['team']) || $config['twitter']['team']['enable'] != 'true')
+    if(!isset($config['twitter']['team']['enable']) || $config['twitter']['team']['enable'] != 'true')
     {
       return $twitts;
     }
     
-    if(!key_exists('team', $config) || count($config['team']) == 0)
+    if(!isset($config['team']) || count($config['team']) == 0)
     {
       return $twitts;
     }
@@ -292,14 +286,14 @@ class Baseboard
     
     foreach($config['team'] as $member)
     {
-      if(!key_exists('twitter-display-name', $member))
+      if(!isset($member['twitter-display-name']))
       {
         continue;
       }
       
       $tmpTwitts = $twitterAPI->get(sprintf('statuses/user_timeline.json?include_entities=false&include_rts=false&screen_name=%s&count=5', $member['twitter-display-name']));
       
-      if(key_exists('error', $tmpTwitts) || count($tmpTwitts) == 0)
+      if(isset($tmpTwitts['error']) || count($tmpTwitts) == 0)
       {
         continue;
       }
@@ -311,7 +305,7 @@ class Baseboard
           'user'  => $tmpTwitt['user']['screen_name'],
           'text'  => $tmpTwitt['text'],
           'image' => $tmpTwitt['user']['profile_image_url'],
-          'avatar' => (key_exists('avatar', $member)) ? $member['avatar'] : ''
+          'avatar' => (isset($member['avatar'])) ? $member['avatar'] : ''
         );
       }
     }
@@ -323,7 +317,7 @@ class Baseboard
       });
     }
     
-    if(key_exists('working-time-only', $config['twitter']['team']) && $config['twitter']['team']['working-time-only'] == 'true')
+    if(isset($config['twitter']['team']['working-time-only']) && $config['twitter']['team']['working-time-only'] == 'true')
     {
       $validTwitts = array();
       foreach($twitts as $twitt)
@@ -343,5 +337,4 @@ class Baseboard
     
     return $twitts;
   }
-  
 }
