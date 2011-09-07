@@ -19,7 +19,7 @@ class hudsonAPI
   {
     $infos = $this->get('json');
     
-    if(key_exists('jobs', $infos))
+    if(is_array($infos) && key_exists('jobs', $infos))
     {
       foreach($infos['jobs'] as $scanedJobs)
       {
