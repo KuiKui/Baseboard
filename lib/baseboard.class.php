@@ -121,7 +121,11 @@ class Baseboard
           {
             if(key_exists('responsible-party-id', $todoItem) && key_exists($todoItem['responsible-party-id'], $config['team']))
             {
-              $milestones[$milestoneId]['teammates'][] = $config['team'][$todoItem['responsible-party-id']];
+              if(!key_exists($todoItem['responsible-party-id'], $milestones[$milestoneId]['teammates']))
+              {
+                $milestones[$milestoneId]['teammates'][$todoItem['responsible-party-id']] = $config['team'][$todoItem['responsible-party-id']];
+              }
+              
               if(key_exists($todoItem['responsible-party-id'], $availableTeammates))
               {
                 unset($availableTeammates[$todoItem['responsible-party-id']]);
