@@ -68,7 +68,6 @@ class Baseboard
             'completedBug' => 0,
             'openedBug' => 0,
             'outdated' => false,
-            'cotationGap' => 0,
             'lateCssClass' => '',
             'teammates' => array()
           );
@@ -141,20 +140,27 @@ class Baseboard
         $milestones[$milestoneId]['openedBug'] = $milestones[$milestoneId]['totalBug'] - $milestones[$milestoneId]['completedBug'];
         $milestones[$milestoneId]['outdated'] = (strtotime(date('c')) > strtotime($milestones[$milestoneId]['deadline'].' 23:59:59'));
     
-        $timeDiff = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $milestones[$milestoneId]['deadline'], $config);
-        if($timeDiff > 0)
+        if($milestones[$milestoneId]['percentCotation'] == 100)
         {
-          $lastDay = new DateTime('-1 day');
-          $theoricalCompletedCotation = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $lastDay->format('Y-m-d'), $config) * $milestones[$milestoneId]['totalCotation'] / $timeDiff;
-          $milestones[$milestoneId]['cotationGap'] = $milestones[$milestoneId]['completedCotation'] - $theoricalCompletedCotation;
-          $byDay = $milestones[$milestoneId]['totalCotation'] / $timeDiff;
-          if($milestones[$milestoneId]['cotationGap'] <= 0 - $byDay)
+          $milestones[$milestoneId]['lateCssClass'] = 'done';
+        }
+        else
+        {
+          $timeDiff = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $milestones[$milestoneId]['deadline'], $config);
+          if($timeDiff > 0)
           {
-            $milestones[$milestoneId]['lateCssClass'] = 'late';
-          }
-          else if($milestones[$milestoneId]['cotationGap'] > $byDay)
-          {
-            $milestones[$milestoneId]['lateCssClass'] = 'early';
+            $lastDay = new DateTime('-1 day');
+            $theoricalCompletedCotation = self::getDiffTimestamp($milestones[$milestoneId]['startAt'], $lastDay->format('Y-m-d'), $config) * $milestones[$milestoneId]['totalCotation'] / $timeDiff;
+            $cotationGap = $milestones[$milestoneId]['completedCotation'] - $theoricalCompletedCotation;
+            $byDay = $milestones[$milestoneId]['totalCotation'] / $timeDiff;
+            if($cotationGap <= 0 - $byDay)
+            {
+              $milestones[$milestoneId]['lateCssClass'] = 'late';
+            }
+            else if($cotationGap > $byDay)
+            {
+              $milestones[$milestoneId]['lateCssClass'] = 'early';
+            }
           }
         }
       }
