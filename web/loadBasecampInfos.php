@@ -25,7 +25,7 @@ $availableTeammates = $infos['availableTeammates'];
           </div>
           <span class="user">
             <?php foreach($milestone['teammates'] as $teammate):?>
-              <span><?php echo $teammate['nickname'] ?></span>
+              <span><?php echo $teammate['name'] ?></span>
             <?php endforeach; ?>
           </span>
         </li>
@@ -36,6 +36,6 @@ $availableTeammates = $infos['availableTeammates'];
   <li class="availableTeam">
     <label>Personnes non affectées :</label>
     <?php foreach($availableTeammates as $availableTeammate):?>
-      <span><?php echo $availableTeammate['nickname'] ?></span>
+      <span><?php echo $availableTeammate['name'] ?></span>
     <?php endforeach; ?>
   </li>

@@ -6,7 +6,7 @@ function Basecamp(hudson) {
   this.BASECAMP_BUG_TIMER = null;
   this.BASECAMP_BUG_CLASSNAME = 'bug';
   this.OPTIONS = {
-    timeToTick: 10 * 60 * 1000
+    timeToTick: 5 * 60 * 1000
   };
 
   this.init = function() {
