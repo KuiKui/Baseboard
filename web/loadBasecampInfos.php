@@ -23,11 +23,15 @@ $availableTeammates = $infos['availableTeammates'];
           <div class="bar <?php echo $milestone['lateCssClass'] ?>">
             <div class="pourcent" style="width:<?php echo $milestone['percentCotation'] ?>%"></div>
           </div>
-          <span class="user">
-            <?php foreach($milestone['teammates'] as $teammate):?>
-              <span><?php echo $teammate['name'] ?></span>
-            <?php endforeach; ?>
-          </span>
+          <?php if($milestone['percentCotation'] == 100): ?>
+            <img class="success" src="images/success.png" />
+          <?php else :?>
+            <span class="user">
+              <?php foreach($milestone['teammates'] as $teammate):?>
+                <span><?php echo $teammate['name'] ?></span>
+              <?php endforeach; ?>
+            </span>
+          <?php endif; ?>
         </li>
       <?php endforeach; ?>
     </ul>

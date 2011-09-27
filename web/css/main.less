@@ -139,6 +139,10 @@ body {
               }
             }
 
+            > img, .success {
+              margin-left: 10px;
+            }
+            
             .quote {
               display: block;
               width: 80px;
@@ -191,7 +195,7 @@ body {
               @blur: 5px;
 
               &.late .pourcent {
-                  background-color: #fd3b15;
+                background-color: #fd3b15;
                 .box-shadow (0px, 0px, @blur, #fd3b15);
               }
               &.early .pourcent {
@@ -199,9 +203,7 @@ body {
                 .box-shadow (0px, 0px, @blur, #54afdc);
               }
               &.done .pourcent {
-                background-color: #eeb;
                 .radius (3px);
-                .box-shadow (0px, 0px, @blur, #fff);
               }
             }
           }
