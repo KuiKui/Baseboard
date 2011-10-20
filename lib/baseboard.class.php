@@ -233,7 +233,7 @@ class Baseboard
     
     if(!is_null($length) && is_int($length) && $length < strlen($retour))
     {
-      $retour = substr($retour, 0, $length - 3) . "...";
+      $retour = mb_substr($retour, 0, $length - 3, 'UTF-8') . "...";
     }
     
     return $retour;
