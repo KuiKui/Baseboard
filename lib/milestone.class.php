@@ -1,50 +1,207 @@
 <?php
 
+/**
+ * Basecamp Milestone object
+ */
 class milestone
 {
   protected $id;
   protected $name;
-  protected $todoLists = array();
-  protected $completed;
-  protected $deadline;
-  protected $startAt;
-  protected $totalCotation = 0;
-  protected $completedCotation = 0;
-  protected $percentCotation = 0;
-  protected $totalBug = 0;
-  protected $completedBug = 0;
-  protected $openedBug = 0;
-  protected $outdated = false;
-  protected $lateCssClass = '';
-  protected $teammates = array();
-
   protected $project;
 
-  public function __construct($id, $project)
+  protected $todoLists = array();
+  protected $workingTeammates = array();
+
+  protected $startAt;
+  protected $deadline;
+  protected $completed;
+  protected $outdated = false;
+  protected $progressState = '';
+
+  protected $totalQuotation = 0;
+  protected $completedQuotation = 0;
+
+  protected $totalBugsCount = 0;
+  protected $completedBugsCount = 0;
+
+
+
+  public function setId($id)
   {
     $this->id = $id;
+  }
+
+  public function getId()
+  {
+    return $this->id;
+  }
+
+  public function setProgressState($lateCssClass)
+  {
+    $this->progressState = $lateCssClass;
+  }
+
+  public function getProgressState()
+  {
+    return $this->progressState;
+  }
+
+  public function setName($name)
+  {
+    $this->name = $name;
+  }
+  public function getName()
+  {
+    return $this->name;
+  }
+
+  public function setCompleted($completed)
+  {
+    $this->completed = $completed;
+  }
+
+  public function getCompleted()
+  {
+    return $this->completed;
+  }
+
+  public function setCompletedQuotation($completedCotation)
+  {
+    $this->completedQuotation = $completedCotation;
+  }
+
+  public function getCompletedQuotation()
+  {
+    return $this->completedQuotation;
+  }
+
+  public function getPercentQuotation()
+  {
+    if($this->totalQuotation > 0)
+    {
+      return round($this->completedQuotation / $this->totalQuotation * 100);
+    }
+
+    return 0;
+  }
+
+  public function setDeadline($deadline)
+  {
+    $this->deadline = $deadline;
+  }
+
+  public function getDeadline()
+  {
+    return $this->deadline;
+  }
+
+  public function getOutdated()
+  {
+    return (strtotime(date('c')) > strtotime($this->deadline.' 23:59:59'));
+  }
+
+  public function setProject($project)
+  {
+    $this->project = $project;
+  }
+  public function getProject()
+  {
+    return $this->project;
+  }
+
+  public function setStartAt($startAt)
+  {
+    $this->startAt = $startAt;
+  }
+  public function getStartAt()
+  {
+    return $this->startAt;
+  }
+
+  public function setTotalQuotation($totalCotation)
+  {
+    $this->totalQuotation = $totalCotation;
+  }
+  public function getTotalQuotation()
+  {
+    return $this->totalQuotation;
+  }
+
+  public function setCompletedBugsCount($completedBugsCount)
+  {
+    $this->completedBugsCount = $completedBugsCount;
+  }
+
+  public function getCompletedBugsCount()
+  {
+    return $this->completedBugsCount;
+  }
+
+  public function getOpenBugsCount()
+  {
+    return $this->totalBugsCount - $this->completedBugsCount;
+  }
+
+  public function setTotalBugsCount($totalBugsCount)
+  {
+    $this->totalBugsCount = $totalBugsCount;
+  }
+
+  public function getTotalBugsCount()
+  {
+    return $this->totalBugsCount;
+  }
+
+  public function setWorkingTeammates($workingTeammates)
+  {
+    $this->workingTeammates = $workingTeammates;
+  }
+
+  public function getWorkingTeammates()
+  {
+    return $this->workingTeammates;
+  }
+
+  /**
+   * Builds a milestone given its related project
+   *
+   * @param $project project project related to this milestone
+   */
+  public function __construct($project)
+  {
     $this->project = $project;
   }
 
-  public function load()
+
+  /**
+   * Issues a request to basecamp API so as to load a milestone and initializes the properties accordingly
+   *
+   * @param $id int Identifier of the milestone to load
+   * @return bool false if the load/initialization fails, true otherwise
+   */
+  public function load($id)
   {
-    $requestHeader = array('Accept: application/xml', 'Content-Type: application/xml');
-    $basecampAPI = new basecampAPI(new RESTConnection($this->project->getBasecampUrl(), $requestHeader, $this->project->getBasecampToken(), 'X'));
+    $tmpMilestone =  $this->project->getBasecampAPI()->get(sprintf('projects/%s/calendar_entries/%s.xml', $this->project->getBasecampId(), $id));
 
-    $tmpMilestone = $basecampAPI->get(sprintf('projects/%s/calendar_entries/%s.xml', $this->project->getBasecampId(), $this->id));
+    return $this->init($tmpMilestone);
+  }
 
-    if(is_null($tmpMilestone) || is_array($tmpMilestone['start-at']) || is_array($tmpMilestone['deadline']))
+  /**
+   * Initializes the current milestone given its json basecamp representation
+   *
+   * @param $tmpMilestone array json representation of a basecamp milestone
+   * @return bool false if the initialization fails, true otherwise
+   */
+  public function init($tmpMilestone)
+  {
+    if(is_null($tmpMilestone))
     {
       return false;
     }
 
-    if($tmpMilestone['completed'] == 'true' || strtotime($tmpMilestone['start-at']) > strtotime('now'))
-    {
-      return false;
-    }
-
+    $this->id = $tmpMilestone['id'];
     $this->name = self::customStrip($tmpMilestone['title'], 40);
-    $this->completed = $tmpMilestone['completed'];
+    $this->completed = $tmpMilestone['completed']=='true';
     $this->deadline = $tmpMilestone['deadline'];
     $this->startAt = $tmpMilestone['start-at'];
 
@@ -52,79 +209,171 @@ class milestone
   }
 
 
-  public function updateProperties()
+  /**
+   * @return bool true if the current milestone is started but neither ended nor completed
+   */
+  public function isPending()
   {
-    if($this->totalCotation > 0)
+    // invalid dates
+    if(is_array($this->startAt) || is_array($this->deadline))
     {
-      $this->percentCotation = round($this->completedCotation / $this->totalCotation * 100);
+      return false;
     }
-    $this->openedBug = $this->totalBug - $this->completedBug;
-    $this->outdated = (strtotime(date('c')) > strtotime($this->deadline.' 23:59:59'));
 
-    if($this->percentCotation == 100)
+    // if milestone is already flagged as completed or is not started yet
+    if($this->completed || strtotime($this->startAt) > strtotime('now'))
     {
-      $this->lateCssClass = 'done';
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   *  Parses a basecamp todolist and updates the milestone properties accordingly
+   *
+   * @param $tmpTodolist array json representation of a basecamp todolist
+   */
+  public function processTodoList($tmpTodolist)
+  {
+    // Update todolist
+    $this->todoLists = array( 'id' => $tmpTodolist['id'],
+                              'name' => $tmpTodolist['name'],
+                              'complete' => ($tmpTodolist['complete'] == 'true'));
+
+    $this->loadTodoItems($tmpTodolist['id']);
+
+    $this->updateProgressState();
+  }
+
+  /**
+   * Issues a request to basecamp API so as to load todolist items
+   *
+   * @param $todolistId int Identifier of the todolist whose items are to load
+   */
+  public function loadTodoItems($todolistId)
+  {
+    $todoItems = $this->project->getBasecampAPI()->get(sprintf('todo_lists/%s/todo_items.xml', $todolistId));
+
+    // No todoitems
+    if(is_null($todoItems))
+    {
+      return;
+    }
+
+    foreach($todoItems as $todoItem)
+    {
+      $this->processTodoItem($todoItem);
+    }
+  }
+
+  /**
+   * Parses a basecamp todoitem and updates the milestone properties accordingly
+   *
+   * @param $todoItem array json representation of a basecamp todoitem
+   */
+  public function processTodoItem($todoItem)
+  {
+    $quotation = 0;
+    $isCompleted = ($todoItem['completed'] == 'true');
+
+    // Get cotation
+    preg_match('/ ((\d+)?\.*(\d+)*)$/', $todoItem['content'], $matches);
+    if(count($matches) > 1)
+    {
+      $quotation = $matches[1];
+    }
+
+    // Get type (bug ?)
+    preg_match('/^bug/i', $todoItem['content'], $matches);
+    $isBug = (count($matches) > 0);
+
+    if($isBug)
+    {
+      $this->totalBugsCount++;
+      $this->completedBugsCount += ($isCompleted) ? 1 : 0;
     }
     else
     {
-      $timeDiff = self::getDiffTimestamp($this->startAt, $this->deadline, $this->project->getWorkdays(), $this->project->getHolidays());
-      if($timeDiff > 0)
+      $this->totalQuotation += $quotation;
+      $this->completedQuotation += ($isCompleted) ? $quotation : 0;
+    }
+
+    if(!$isCompleted)
+    {
+      $team = $this->project->getTeam();
+      if(isset($todoItem['responsible-party-id']) && isset($team[$todoItem['responsible-party-id']]))
       {
-        $lastDay = new DateTime('-1 day');
-        $theoricalCompletedCotation = self::getDiffTimestamp($this->startAt, $lastDay->format('Y-m-d'), $this->project->getWorkdays(), $this->project->getHolidays()) * $this->totalCotation / $timeDiff;
-        $cotationGap = $this->completedCotation - $theoricalCompletedCotation;
-        $byDay = $this->totalCotation / $timeDiff;
-        if($cotationGap <= 0 - $byDay)
+        if(!isset($this->workingTeammates[$todoItem['responsible-party-id']]))
         {
-          $this->lateCssClass = 'late';
-        }
-        else if($cotationGap > $byDay)
-        {
-          $this->lateCssClass = 'early';
+          $this->workingTeammates[$todoItem['responsible-party-id']] = $team[$todoItem['responsible-party-id']];
         }
       }
     }
   }
 
-  public function setTodoLists($todoLists)
+  /**
+   * Updates the milestone progress state to one of the following : done, late, early
+   */
+  protected function updateProgressState()
   {
-    $this->todoLists = $todoLists;
+    if($this->getPercentQuotation() == 100)
+    {
+      $this->progressState = 'done';
+    }
+    else
+    {
+      $totalDaysCount = self::getDiffTimestamp($this->startAt, $this->deadline, $this->project->getWorkdays(), $this->project->getHolidays());
+      if($totalDaysCount > 0)
+      {
+        $yesterday = new DateTime('-1 day');
+        $spentDaysCount = self::getDiffTimestamp($this->startAt, $yesterday->format('Y-m-d'), $this->project->getWorkdays(), $this->project->getHolidays());
+        $theoricalCurrentCompletedCotation = $spentDaysCount * $this->totalQuotation / $totalDaysCount;
+        $theoricalRemainingDaysCount = $this->completedQuotation - $theoricalCurrentCompletedCotation;
+        $perDay = $this->totalQuotation / $totalDaysCount;
+        if($theoricalRemainingDaysCount <= 0 - $perDay)
+        {
+          $this->progressState = 'late';
+        }
+        else if($theoricalRemainingDaysCount > $perDay)
+        {
+          $this->progressState = 'early';
+        }
+      }
+    }
   }
 
-  public function getProperties()
-  {
-    return array(
-      'id' => $this->id,
-      'name' => $this->name,
-      'todoLists' => $this->todoLists,
-      'completed' => $this->completed,
-      'deadline' => $this->deadline,
-      'startAt' => $this->startAt,
-      'totalCotation' => $this->totalCotation,
-      'completedCotation' => $this->completedCotation,
-      'percentCotation' => $this->percentCotation,
-      'totalBug' => $this->totalBug,
-      'completedBug' => $this->completedBug,
-      'openedBug' => $this->openedBug,
-      'outdated' => $this->outdated,
-      'lateCssClass' => $this->lateCssClass,
-      'teammates' => $this->teammates
-    );
-  }
-
+  /**
+   * Shortens the passed string argument to the given length
+   *
+   * @static
+   * @param $str string to strip
+   * @param null $length max string length
+   * @return string stripped string
+   */
   public static function customStrip($str, $length = null)
   {
-    $retour = ucfirst(preg_replace('/^.*:[ ]+/i', '', trim($str)));
+    $res = ucfirst(preg_replace('/^.*:[ ]+/i', '', trim($str)));
 
-    if(!is_null($length) && is_int($length) && $length < strlen($retour))
+    if(!is_null($length) && is_int($length) && $length < strlen($res))
     {
-      $retour = mb_substr($retour, 0, $length - 3, 'UTF-8') . "...";
+      $res = mb_substr($res, 0, $length - 3, 'UTF-8') . "...";
     }
 
-    return $retour;
+    return $res;
   }
 
 
+  /**
+   * Returns the number of worked days between start and end
+   *
+   * @static
+   * @param $start string starting day
+   * @param $end string ending day
+   * @param $workdays array list of worked days in the week
+   * @param $holidays array list of holidays
+   * @return int number of worked days between start and end
+   */
   public static function getDiffTimestamp($start, $end, $workdays, $holidays)
   {
     $startDate = new DateTime(substr($start, 0, 10));
@@ -152,4 +401,8 @@ class milestone
 
     return $total;
   }
+
+
+
+
 }

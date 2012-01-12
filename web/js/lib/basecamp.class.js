@@ -27,7 +27,7 @@ function Basecamp(hudson) {
         $this.BASECAMP_DOM.html(html);
 
         if($this.BASECAMP_BUG_TIMER == null) {
-          $this.BASECAMP_BUG_TIMER = setInterval(function() { $this.flashBugs() }, 1300);
+          $this.BASECAMP_BUG_TIMER = setInterval(function() { $this.flashBugs() }, 3000);
         }
       }
     });
@@ -35,8 +35,8 @@ function Basecamp(hudson) {
 
   this.flashBugs = function() {
     $('.' + this.BASECAMP_BUG_CLASSNAME)
-      .animate({opacity: 0.25}, 600, function() {
-      $(this).animate({opacity: 1}, 600)
+      .animate({opacity: 0.25}, 1000, function() {
+      $(this).animate({opacity: 1}, 1000)
     });
   };
 }

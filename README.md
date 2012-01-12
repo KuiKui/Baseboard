@@ -1,2 +1,2 @@
-Basebard is a dashboard for team managment working with Basecamp.  
+Baseboard is a dashboard for team managment working with Basecamp.
 Test
