@@ -11,7 +11,7 @@ $availableTeammates = $infos['availableTeammates'];
     <h1>
       <?php echo $project->getName() ?>
       <?php if($project->getOpenBugsCount() > 0): ?>
-      <span class="bug"><?php echo $project->getOpenBugsCount(); ?></span>
+      <span class="bug"><img class="success" src="images/bug.png" /> <?php echo $project->getOpenBugsCount(); ?></span>
       <?php endif; ?>
     </h1>
     <ul class="stories">
@@ -20,7 +20,7 @@ $availableTeammates = $infos['availableTeammates'];
         <li>
           <span class="title <?php echo $milestone->getOutdated() ? 'outdated' : '' ?>"><?php echo $milestone->getName() ?></span>
           <span class="quote">
-            <?php echo sprintf('%s / %s', $milestone->getCompletedQuotation(), $milestone->getTotalQuotation()); ?>
+            <label><?php echo sprintf('%s / %s', $milestone->getCompletedQuotation(), $milestone->getTotalQuotation()); ?></label>
           </span>
           <div class="bar <?php echo $milestone->getProgressState() ?>">
             <div class="pourcent" style="width:<?php echo $milestone->getPercentQuotation() ?>%"></div>
@@ -45,3 +45,10 @@ $availableTeammates = $infos['availableTeammates'];
       <span><?php echo $availableTeammate['name'] ?></span>
     <?php endforeach; ?>
   </li>
+  <script type="text/javascript">
+    $(window).webAdjust({wrapper: $('#projects'), ratio: {window: 624, wrapper: 881, fontSize: 7.3}});
+    $('.stories .title').wauto();
+    $('.stories .quote').wauto();
+    $('.stories .bar').wauto();
+    $('.stories .user').wauto();
+  </script>

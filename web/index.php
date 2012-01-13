@@ -15,6 +15,8 @@ $config = sfYaml::load(dirname(__FILE__).'/../config/config.yml');
     <script type="text/javascript" src="js/lib/vendor/jquery.animate-colors-min.js"></script>
     <script type="text/javascript" src="js/lib/hudson.class.js"></script>
     <script type="text/javascript" src="js/lib/basecamp.class.js"></script>
+    <script type="text/javascript" src="js/webAdjust.js"></script>
+    <script type="text/javascript" src="js/wauto.js"></script>
     <!--<script type="text/javascript" src="js/lib/index.js"></script>-->
   </head>
 <body>
