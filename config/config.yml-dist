@@ -1,6 +1,8 @@
 general:
   workdays: [1, 2, 3, 4, 5]
   holidays: ['25/12/12']
+  basecampRefreshInterval: 180
+  hudsonRefreshInterval: 300
 projects:
   ProjectName:
     basecamp-url: 'https://xxx.basecamphq.com/'
@@ -8,6 +10,7 @@ projects:
     basecamp-id: your_project_basecamp_id
     hudson-url: 'http://your_hudson_server/api/'
     hudson-jobs: ['job1', 'job2']
+    bug-todolist-name: 'bug'
 team:
   _member1_basecamp_user_id_:
     name: member1_displayed_name
