@@ -2,27 +2,53 @@
 
 class basecampAPI
 {
-  protected $curlConnexion;
+  protected $restConnection;
   
-  public function __construct(curlConnexion $curlConnexion)
+  public function __construct(RESTConnection $restConnection)
   {
-    $this->curlConnexion = $curlConnexion;
+    $this->restConnection = $restConnection;
   }
 
-  public function get($request, $param = null, $param2 = null)
+  public function get($request)
   {
-    $xml = $this->curlConnexion->get($request, $param, $param2);
-    return $this->clearBasecampXml(json_decode(json_encode(simplexml_load_string($xml)), true));
-  }
-  
-  protected function clearBasecampXml($xml)
-  {
-    if(!array_key_exists('@attributes', $xml))
+    if($this->restConnection->request($request))
     {
-      return $xml;
+      return $this->xml2array(simplexml_load_string($this->restConnection->getResponseBody()));
     }
-  
-    $tmp = array_values(array_slice($xml, 1, 1));
-    return array_shift($tmp);
+    return null;
   }
+
+  protected function xml2array($xml)
+  {
+    $tmp = json_decode(json_encode($xml), true);
+
+    // If xml is a list of entities (type=array)
+    if(array_key_exists('@attributes', $tmp))
+    {
+      $tmp =  array_values(array_slice($tmp, 1, 1));
+
+      if(count($tmp)>0)
+      {
+        return $tmp[0];
+      }
+    }
+
+    return $tmp;
+  }
+  /*
+  protected function xml2array($xml)
+  {
+    $arr = array();
+    foreach ($xml->children() as $child)
+    {
+      $name = $child->getName();
+      if(count($child->children()) == 0)
+        $arr[$name] = strval($child);
+      else
+        $arr[$name][] = $this->xml2array($child);
+    }
+    return $arr;
+  }
+  */
+
 }

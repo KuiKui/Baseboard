@@ -9,7 +9,7 @@ function Hudson()
   this.HUDSON_FLASH_TIMER = null;
   this.OPTIONS = {
     timeToTick: 3 * 60 * 1000,
-    flashColor: 'rgb(240, 189, 21)'
+    flashColor: 'rgb(240, 189, 102)'
   };
   
   this.init = function() {
@@ -47,7 +47,7 @@ function Hudson()
     });
 
     if($this.HUDSON_FLASH_TIMER == null) {
-      $this.HUDSON_FLASH_TIMER = setInterval(function() { $this.flashErrors() }, 1300);
+      $this.HUDSON_FLASH_TIMER = setInterval(function() { $this.flashErrors() }, 3000);
     }
   };
 
@@ -55,8 +55,8 @@ function Hudson()
     var $this = this;
 
     $('.' + this.HUDSON_CLASSNAME)
-      .animate({backgroundColor: '#101010'}, 600, function() {
-      $(this).animate({backgroundColor: $this.OPTIONS.flashColor}, 600);
+      .animate({backgroundColor: $this.OPTIONS.flashColor}, 1000, function() {
+      $(this).animate({backgroundColor: '#101010'}, 1000);
     });
   };
 }

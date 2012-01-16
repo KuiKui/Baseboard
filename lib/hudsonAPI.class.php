@@ -2,23 +2,24 @@
 
 class hudsonAPI
 {
-  protected $curlConnexion;
+  protected $restConnection;
   
-  public function __construct(curlConnexion $curlConnexion)
+  public function __construct(RESTConnection $restConnection)
   {
-    $this->curlConnexion = $curlConnexion;
+    $this->restConnection = $restConnection;
   }
 
   public function get($request)
   {
-    $json = $this->curlConnexion->get($request);
-    return json_decode($json, true);
+    if($this->restConnection->request($request))
+      return json_decode($this->restConnection->getResponseBody(), true);
+    return null;
   }
   
   public function hasFailedHudsonJobs($jobs = null)
   {
     $infos = $this->get('json');
-    
+
     if(is_array($infos) && key_exists('jobs', $infos))
     {
       foreach($infos['jobs'] as $scanedJobs)
