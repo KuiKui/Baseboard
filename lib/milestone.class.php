@@ -182,7 +182,6 @@ class milestone
   public function load($id)
   {
     $tmpMilestone =  $this->project->getBasecampAPI()->get(sprintf('projects/%s/calendar_entries/%s.xml', $this->project->getBasecampId(), $id));
-
     return $this->init($tmpMilestone);
   }
 
@@ -200,7 +199,7 @@ class milestone
     }
 
     $this->id = $tmpMilestone['id'];
-    $this->name = self::customStrip($tmpMilestone['title'], 40);
+    $this->name = $tmpMilestone['title'];
     $this->completed = $tmpMilestone['completed']=='true';
     $this->deadline = $tmpMilestone['deadline'];
     $this->startAt = $tmpMilestone['start-at'];
@@ -341,26 +340,6 @@ class milestone
         }
       }
     }
-  }
-
-  /**
-   * Shortens the passed string argument to the given length
-   *
-   * @static
-   * @param $str string to strip
-   * @param null $length max string length
-   * @return string stripped string
-   */
-  public static function customStrip($str, $length = null)
-  {
-    $res = ucfirst(preg_replace('/^.*:[ ]+/i', '', trim($str)));
-
-    if(!is_null($length) && is_int($length) && $length < strlen($res))
-    {
-      $res = mb_substr($res, 0, $length - 3, 'UTF-8') . "...";
-    }
-
-    return $res;
   }
 
 

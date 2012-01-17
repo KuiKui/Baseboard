@@ -20,7 +20,6 @@ class Baseboard
       $project->setWorkdays($config['general']['workdays']);
       $project->setHolidays($config['general']['holidays']);
       $project->setTeam($availableTeammates);
-
       $project->loadMilestones();
       $project->loadTodoLists('pending');
 
