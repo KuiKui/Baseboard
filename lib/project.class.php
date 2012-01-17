@@ -251,7 +251,7 @@ class project
    */
   public function loadTodoLists($filter = '')
   {
-    $tmpTodolists = $this->basecampAPI->get(sprintf('projects/%s/todo_lists.xml?filter=', $this->basecampId, $filter));
+    $tmpTodolists = $this->basecampAPI->get(sprintf('projects/%s/todo_lists.xml?filter=%s', $this->basecampId, $filter));
     if(is_null($tmpTodolists))
     {
       return;

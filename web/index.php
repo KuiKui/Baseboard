@@ -36,7 +36,7 @@ $config = sfYaml::load(dirname(__FILE__).'/../config/config.yml');
     });
   </script>
 
-  <div id="wrapped">
+  <div id="wrapper">
     <ul id="projects"></ul>
   </div>
 </body>

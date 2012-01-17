@@ -18,21 +18,21 @@ $availableTeammates = $infos['availableTeammates'];
       <?php foreach($project->getMilestones() as $milestone):?>
         <?php if(!$milestone->isPending()) continue;?>
         <li>
-          <span class="title <?php echo $milestone->getOutdated() ? 'outdated' : '' ?>"><?php echo $milestone->getName() ?></span>
-          <span class="quote">
+          <div class="box title <?php echo $milestone->getOutdated() ? 'outdated' : '' ?>"><span class="ellipsis"><?php echo $milestone->getName() ?></span></div>
+          <div class="box quote">
             <label><?php echo sprintf('%s / %s', $milestone->getCompletedQuotation(), $milestone->getTotalQuotation()); ?></label>
-          </span>
-          <div class="bar <?php echo $milestone->getProgressState() ?>">
+          </div>
+          <div class="box bar <?php echo $milestone->getProgressState() ?>">
             <div class="pourcent" style="width:<?php echo $milestone->getPercentQuotation() ?>%"></div>
           </div>
           <?php if($milestone->getPercentQuotation() == 100): ?>
             <img class="success" src="images/success.png" />
           <?php else :?>
-            <span class="user">
+            <div class="users">
               <?php foreach($milestone->getWorkingTeammates() as $teammate):?>
-                <span><?php echo $teammate['name'] ?></span>
+                <span class="box"><?php echo $teammate['name'] ?></span>
               <?php endforeach; ?>
-            </span>
+            </div>
           <?php endif; ?>
         </li>
       <?php endforeach; ?>
@@ -42,13 +42,9 @@ $availableTeammates = $infos['availableTeammates'];
   <li class="availableTeam">
     <label>Available teammates :</label>
     <?php foreach($availableTeammates as $availableTeammate):?>
-      <span><?php echo $availableTeammate['name'] ?></span>
+      <span class="box"><?php echo $availableTeammate['name'] ?></span>
     <?php endforeach; ?>
   </li>
   <script type="text/javascript">
-    $(window).webAdjust({wrapper: $('#projects'), ratio: {window: 624, wrapper: 881, fontSize: 7.3}});
-    $('.stories .title').wauto();
-    $('.stories .quote').wauto();
-    $('.stories .bar').wauto();
-    $('.stories .user').wauto();
+    $(window).webAdjust({wrapper: $('#projects'), maxFontSize: 27});
   </script>
