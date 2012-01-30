@@ -6,3 +6,4 @@ require_once dirname(__FILE__).'/../lib/basecampAPI.class.php';
 require_once dirname(__FILE__).'/../lib/hudsonAPI.class.php';
 require_once dirname(__FILE__).'/../lib/project.class.php';
 require_once dirname(__FILE__).'/../lib/milestone.class.php';
+require_once dirname(__FILE__).'/../lib/todolist.class.php';

@@ -20,6 +20,7 @@ class project
   protected $workdays;
   protected $holidays;
   protected $team;
+  protected $bugsResolvingTeammates = array();
   protected $bugTodoListName;
 
   protected $basecampAPI;
@@ -104,6 +105,30 @@ class project
 
     // return items in "bug" todolist
     return $this->openBugsCount;
+  }
+
+  /**
+   * Returns the teammates currently working on bugs on this project
+   * Depending on the configuration, these bugs will be either the open items in a special "bug" todolist or the open bug flagged items in all todolists
+   *
+   * @return int open bugs count
+   */
+  public function getBugsResolvingTeammates()
+  {
+    // return bugs that are defined in todoitems
+    if(!$this->fetchBugsFromSpecialTodoList())
+    {
+      $teammates = array();
+      foreach($this->milestones as $milestone)
+      {
+        if($milestone->isPending())
+          $teammates += $milestone->getBugsResolvingTeammates();
+      }
+      return $teammates;
+    }
+
+    // return items in "bug" todolist
+    return $this->bugsResolvingTeammates;
   }
 
   public function setWorkdays($workdays)
@@ -271,14 +296,26 @@ class project
    */
   public function processTodoList($tmpTodolist)
   {
-    if($this->fetchBugsFromSpecialTodoList() &&
-        substr(strtolower($tmpTodolist['name']), 0, 3) == $this->bugTodoListName &&
-        $tmpTodolist['complete'] == 'false')
+    $todoList = new todolist($this);
+
+    if(!$todoList->init($tmpTodolist))
     {
-      $this->openBugsCount += $tmpTodolist['uncompleted-count'];
+      return;
     }
 
-    $milestoneId = $tmpTodolist['milestone-id'];
+    // Update bugsCount + bugsResolvingTeammates for special todolist
+    if($this->fetchBugsFromSpecialTodoList() &&
+      substr(strtolower($todoList->getName()), 0, 3) == $this->bugTodoListName &&
+      !$todoList->getComplete())
+    {
+      $todoList->loadTodoItems();
+      $this->openBugsCount += $todoList->getUncompletedCount();
+      $this->bugsResolvingTeammates += $todoList->getWorkingTeammates();
+      return;
+    }
+
+
+    $milestoneId = $todoList->getMilestoneId();
 
     // No related milestone
     if(is_array($milestoneId))
@@ -302,8 +339,9 @@ class project
     // Put todolist info into the milestone if it's pending
     if($this->milestones[$milestoneId]->isPending())
     {
-      $this->milestones[$milestoneId]->processTodoList($tmpTodolist);
+      $this->milestones[$milestoneId]->processTodoList($todoList);
     }
+
 
   }
 

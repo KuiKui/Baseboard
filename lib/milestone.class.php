@@ -10,19 +10,12 @@ class milestone
   protected $project;
 
   protected $todoLists = array();
-  protected $workingTeammates = array();
 
   protected $startAt;
   protected $deadline;
   protected $completed;
   protected $outdated = false;
   protected $progressState = '';
-
-  protected $totalQuotation = 0;
-  protected $completedQuotation = 0;
-
-  protected $totalBugsCount = 0;
-  protected $completedBugsCount = 0;
 
 
 
@@ -65,26 +58,6 @@ class milestone
     return $this->completed;
   }
 
-  public function setCompletedQuotation($completedCotation)
-  {
-    $this->completedQuotation = $completedCotation;
-  }
-
-  public function getCompletedQuotation()
-  {
-    return $this->completedQuotation;
-  }
-
-  public function getPercentQuotation()
-  {
-    if($this->totalQuotation > 0)
-    {
-      return round($this->completedQuotation / $this->totalQuotation * 100);
-    }
-
-    return 0;
-  }
-
   public function setDeadline($deadline)
   {
     $this->deadline = $deadline;
@@ -118,48 +91,88 @@ class milestone
     return $this->startAt;
   }
 
-  public function setTotalQuotation($totalCotation)
-  {
-    $this->totalQuotation = $totalCotation;
-  }
   public function getTotalQuotation()
   {
-    return $this->totalQuotation;
+    $totalQuotation = 0;
+    foreach($this->todoLists as $todolist)
+    {
+      $totalQuotation += $todolist->getTotalQuotation();
+    }
+    return $totalQuotation;
   }
 
-  public function setCompletedBugsCount($completedBugsCount)
+  public function getCompletedQuotation()
   {
-    $this->completedBugsCount = $completedBugsCount;
+    $completedQuotation = 0;
+    foreach($this->todoLists as $todolist)
+    {
+      $completedQuotation += $todolist->getCompletedQuotation();
+    }
+    return $completedQuotation;
   }
 
-  public function getCompletedBugsCount()
+  public function getPercentQuotation()
   {
-    return $this->completedBugsCount;
-  }
+    if($this->getTotalQuotation() > 0)
+    {
+      return round($this->getCompletedQuotation() / $this->getTotalQuotation() * 100);
+    }
 
-  public function getOpenBugsCount()
-  {
-    return $this->totalBugsCount - $this->completedBugsCount;
-  }
-
-  public function setTotalBugsCount($totalBugsCount)
-  {
-    $this->totalBugsCount = $totalBugsCount;
+    return 0;
   }
 
   public function getTotalBugsCount()
   {
-    return $this->totalBugsCount;
+    $totalBugsCount = 0;
+    foreach($this->todoLists as $todolist)
+    {
+      $totalBugsCount += $todolist->getTotalBugsCount();
+    }
+    return $totalBugsCount;
   }
 
-  public function setWorkingTeammates($workingTeammates)
+  public function getCompletedBugsCount()
   {
-    $this->workingTeammates = $workingTeammates;
+    $completedBugsCount = 0;
+    foreach($this->todoLists as $todolist)
+    {
+      $completedBugsCount += $todolist->getCompletedBugsCount();
+    }
+    return $completedBugsCount;
+  }
+
+  public function getOpenBugsCount()
+  {
+    $openBugsCount = 0;
+    foreach($this->todoLists as $todolist)
+    {
+      $openBugsCount += $todolist->getOpenBugsCount();
+    }
+    return $openBugsCount;
   }
 
   public function getWorkingTeammates()
   {
-    return $this->workingTeammates;
+    $teammates = array();
+    foreach($this->todoLists as $todolist)
+    {
+      $teammates += $todolist->getWorkingTeammates();
+    }
+    //$teammates = array_unique($teammates);
+
+    return $teammates;
+  }
+
+  public function getBugResolvingTeammates()
+  {
+    $teammates = array();
+    foreach($this->todoLists as $todolist)
+    {
+      $teammates += $todolist->getBugResolvingTeammates();
+    }
+    //$teammates = array_unique($teammates);
+
+    return $teammates;
   }
 
   /**
@@ -233,83 +246,15 @@ class milestone
    *
    * @param $tmpTodolist array json representation of a basecamp todolist
    */
-  public function processTodoList($tmpTodolist)
+  public function processTodoList($todoList)
   {
     // Update todolist
-    $this->todoLists = array( 'id' => $tmpTodolist['id'],
-                              'name' => $tmpTodolist['name'],
-                              'complete' => ($tmpTodolist['complete'] == 'true'));
-
-    $this->loadTodoItems($tmpTodolist['id']);
+    $this->todoLists[] = $todoList;
+    $todoList->loadTodoItems();
 
     $this->updateProgressState();
   }
 
-  /**
-   * Issues a request to basecamp API so as to load todolist items
-   *
-   * @param $todolistId int Identifier of the todolist whose items are to load
-   */
-  public function loadTodoItems($todolistId)
-  {
-    $todoItems = $this->project->getBasecampAPI()->get(sprintf('todo_lists/%s/todo_items.xml', $todolistId));
-
-    // No todoitems
-    if(is_null($todoItems))
-    {
-      return;
-    }
-
-    foreach($todoItems as $todoItem)
-    {
-      $this->processTodoItem($todoItem);
-    }
-  }
-
-  /**
-   * Parses a basecamp todoitem and updates the milestone properties accordingly
-   *
-   * @param $todoItem array json representation of a basecamp todoitem
-   */
-  public function processTodoItem($todoItem)
-  {
-    $quotation = 0;
-    $isCompleted = ($todoItem['completed'] == 'true');
-
-    // Get cotation
-    preg_match('/ ((\d+)?\.*(\d+)*)$/', $todoItem['content'], $matches);
-    if(count($matches) > 1)
-    {
-      $quotation = $matches[1];
-    }
-
-    // Get type (bug ?)
-    preg_match('/^bug/i', $todoItem['content'], $matches);
-    $isBug = (count($matches) > 0);
-
-    if($isBug)
-    {
-      $this->totalBugsCount++;
-      $this->completedBugsCount += ($isCompleted) ? 1 : 0;
-    }
-    else
-    {
-      $this->totalQuotation += $quotation;
-      $this->completedQuotation += ($isCompleted) ? $quotation : 0;
-    }
-
-    if(!$isCompleted)
-    {
-      $team = $this->project->getTeam();
-      if(isset($todoItem['responsible-party-id']) && isset($team[$todoItem['responsible-party-id']]))
-      {
-        if(!isset($this->workingTeammates[$todoItem['responsible-party-id']]))
-        {
-          $this->workingTeammates[$todoItem['responsible-party-id']] = $team[$todoItem['responsible-party-id']];
-        }
-      }
-    }
-  }
 
   /**
    * Updates the milestone progress state to one of the following : done, late, early
@@ -327,9 +272,9 @@ class milestone
       {
         $yesterday = new DateTime('-1 day');
         $spentDaysCount = self::getDiffTimestamp($this->startAt, $yesterday->format('Y-m-d'), $this->project->getWorkdays(), $this->project->getHolidays());
-        $theoricalCurrentCompletedCotation = $spentDaysCount * $this->totalQuotation / $totalDaysCount;
-        $theoricalRemainingDaysCount = $this->completedQuotation - $theoricalCurrentCompletedCotation;
-        $perDay = $this->totalQuotation / $totalDaysCount;
+        $theoricalCurrentCompletedCotation = $spentDaysCount * $this->getTotalQuotation() / $totalDaysCount;
+        $theoricalRemainingDaysCount = $this->getCompletedQuotation() - $theoricalCurrentCompletedCotation;
+        $perDay = $this->getTotalQuotation() / $totalDaysCount;
         if($theoricalRemainingDaysCount <= 0 - $perDay)
         {
           $this->progressState = 'late';

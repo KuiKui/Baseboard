@@ -8,11 +8,17 @@ $availableTeammates = $infos['availableTeammates'];
 ?>
 <?php foreach($projects as $project):?>
   <li id="<?php echo $project->getBasecampId() ?>" class="project">
+    <?php if($project->getOpenBugsCount() > 0): ?>
+    <span class="bug"><img class="success" src="images/bug.png" /> <span class="nb"><?php echo $project->getOpenBugsCount(); ?></span>
+      <span class="bugUsers">
+        <?php foreach($project->getBugsResolvingTeammates() as $teammate):?>
+          <span class="box"><?php echo $teammate['name'] ?></span>
+        <?php endforeach; ?>
+      </span>
+    </span>
+    <?php endif; ?>
     <h1>
       <?php echo $project->getName() ?>
-      <?php if($project->getOpenBugsCount() > 0): ?>
-      <span class="bug"><img class="success" src="images/bug.png" /> <?php echo $project->getOpenBugsCount(); ?></span>
-      <?php endif; ?>
     </h1>
     <ul class="stories">
       <?php foreach($project->getMilestones() as $milestone):?>
