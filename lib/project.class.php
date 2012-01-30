@@ -82,6 +82,10 @@ class project
   {
     return $this->milestones;
   }
+  public function getFullUrl()
+  {
+    return $this->basecampUrl . "projects/" . $this->basecampId;
+  }
 
   /**
    * Returns the currently open bugs count in this project.

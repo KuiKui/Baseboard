@@ -9,22 +9,23 @@ $availableTeammates = $infos['availableTeammates'];
 <?php foreach($projects as $project):?>
   <li id="<?php echo $project->getBasecampId() ?>" class="project">
     <?php if($project->getOpenBugsCount() > 0): ?>
-    <span class="bug"><img class="success" src="images/bug.png" /> <span class="nb"><?php echo $project->getOpenBugsCount(); ?></span>
+    <span class="bug">
       <span class="bugUsers">
         <?php foreach($project->getBugsResolvingTeammates() as $teammate):?>
           <span class="box"><?php echo $teammate['name'] ?></span>
         <?php endforeach; ?>
       </span>
+      <img class="success" src="images/bug.png" /> <span class="nb"><?php echo $project->getOpenBugsCount(); ?></span>
     </span>
     <?php endif; ?>
     <h1>
-      <?php echo $project->getName() ?>
+      <a href="<?php echo $project->getFullUrl() ?>"><?php echo $project->getName() ?></a>
     </h1>
     <ul class="stories">
       <?php foreach($project->getMilestones() as $milestone):?>
         <?php if(!$milestone->isPending()) continue;?>
         <li>
-          <div class="box title <?php echo $milestone->getOutdated() ? 'outdated' : '' ?>"><span class="ellipsis"><?php echo $milestone->getName() ?></span></div>
+          <div class="box title <?php echo $milestone->getOutdated() ? 'outdated' : '' ?>"><a href="<?php echo $milestone->getFullUrl() ?>" class="ellipsis"><?php echo $milestone->getName() ?></a></div>
           <div class="box quote">
             <label><?php echo sprintf('%s / %s', $milestone->getCompletedQuotation(), $milestone->getTotalQuotation()); ?></label>
           </div>

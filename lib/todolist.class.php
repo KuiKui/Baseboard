@@ -205,6 +205,9 @@ class todolist
    */
   public function processTodoItem($todoItem)
   {
+    if(!isset($todoItem['id']))
+      return;
+
     $quotation = 0;
     $isCompleted = ($todoItem['completed'] == 'true');
 

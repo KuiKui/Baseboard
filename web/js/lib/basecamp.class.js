@@ -34,7 +34,7 @@ function Basecamp(hudson) {
   };
 
   this.flashBugs = function() {
-    $('.' + this.BASECAMP_BUG_CLASSNAME)
+    $('.' + this.BASECAMP_BUG_CLASSNAME + " img")
       .animate({opacity: 0.25}, 1000, function() {
       $(this).animate({opacity: 1}, 1000)
     });

@@ -56,7 +56,11 @@ body {
         font: lighter 1.8em/1.2em Arial;
         margin: .2em .2em .5em .2em;
         text-shadow: .05em .05em .2em #101010;
-        color: #dd9;
+
+        a {
+          color: #dd9;
+          text-decoration: none;
+        }
       }
 
       .bug {
@@ -116,9 +120,11 @@ body {
                 width: 40%;
                 clear:left;
 
-                span {
+                span, a {
                   display:block;
                   padding:0 .3em;
+                  text-decoration: none;
+                  color:#efefef;
                 }
 
                 &.outdated {

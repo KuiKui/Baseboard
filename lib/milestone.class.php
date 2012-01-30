@@ -175,6 +175,11 @@ class milestone
     return $teammates;
   }
 
+  public function getFullUrl()
+  {
+    return $this->project->getBasecampUrl() . "milestones/" . $this->id . "/comments";
+  }
+
   /**
    * Builds a milestone given its related project
    *
