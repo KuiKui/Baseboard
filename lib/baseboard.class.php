@@ -24,6 +24,7 @@ class Baseboard
       $project->loadTodoLists('pending');
 
       $workingTeammates += $project->getWorkingTeammates();
+      $workingTeammates += $project->getBugsResolvingTeammates();
 
       $projects [] = $project;
     }
