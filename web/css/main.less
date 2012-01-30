@@ -56,21 +56,39 @@ body {
         font: lighter 1.8em/1.2em Arial;
         margin: .2em .2em .5em .2em;
         text-shadow: .05em .05em .2em #101010;
-        color: #dd9;
 
-        .bug {
-          float: right;
-          padding: 0 .1em;
-          font: bold 1em/1.2em sans-serif;
+        a {
+          color: #dd9;
+          text-decoration: none;
+        }
+      }
+
+      .bug {
+        float: right;
+        padding: 0 .1em;
+        font: bold 1.5em/1.5em sans-serif;
+        .radius (.2em);
+
+        img {
+          height:1.2em;
+          vertical-align: text-top;
+        }
+
+        .nb {
           color: #cd1806;
-          .radius (.2em);
+        }
 
-          img {
-            height:1.1em;
-            vertical-align: top;
+        .bugUsers {
+          font-size:.7em;
+          color: #bcf;
+
+          .box{
+            display: inline-block;
+            padding: 0 .2em;
           }
         }
       }
+
 
       .project {
         overflow: auto;
@@ -102,9 +120,11 @@ body {
                 width: 40%;
                 clear:left;
 
-                span {
+                span, a {
                   display:block;
                   padding:0 .3em;
+                  text-decoration: none;
+                  color:#efefef;
                 }
 
                 &.outdated {
