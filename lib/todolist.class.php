@@ -10,11 +10,13 @@ class todolist
   protected $complete;
   protected $project;
 
+  protected $remainingItems = array();
   protected $uncompletedCount;
   protected $milestoneId;
 
   protected $workingTeammates = array();
   protected $bugsResolvingTeammates = array();
+  protected $openBugsList = array();
 
   protected $totalQuotation = 0;
   protected $completedQuotation = 0;
@@ -143,6 +145,21 @@ class todolist
     return $this->bugsResolvingTeammates;
   }
 
+  public function getOpenBugsList()
+  {
+    return $this->openBugsList;
+  }
+
+  public function getRemainingItems()
+  {
+    return $this->remainingItems;
+  }
+
+  public function getFullUrl()
+  {
+    return $this->project->getFullUrl() . "/todo_lists/" . $this->id;
+  }
+
 
   /**
    * Builds a todolist
@@ -226,12 +243,19 @@ class todolist
     {
       $this->totalBugsCount++;
       $this->completedBugsCount += ($isCompleted) ? 1 : 0;
+      if(!$isCompleted)
+      {
+        $this->openBugsList[$todoItem['id']] = array('name'=>$todoItem['content']);
+      }
     }
     else
     {
       $this->totalQuotation += $quotation;
       $this->completedQuotation += ($isCompleted) ? $quotation : 0;
     }
+
+    if(!$isCompleted)
+      $this->remainingItems[$todoItem['id']] = array('name'=>$todoItem['content']);
 
     if(!$isCompleted)
     {

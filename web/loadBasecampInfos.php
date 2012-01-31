@@ -9,14 +9,19 @@ $availableTeammates = $infos['availableTeammates'];
 <?php foreach($projects as $project):?>
   <li id="<?php echo $project->getBasecampId() ?>" class="project">
     <?php if($project->getOpenBugsCount() > 0): ?>
-    <span class="bug">
+    <div class="bug">
       <span class="bugUsers">
         <?php foreach($project->getBugsResolvingTeammates() as $teammate):?>
           <span class="box"><?php echo $teammate['name'] ?></span>
         <?php endforeach; ?>
       </span>
       <img class="success" src="images/bug.png" /> <span class="nb"><?php echo $project->getOpenBugsCount(); ?></span>
-    </span>
+      <ul class="tooltip">
+        <?php foreach($project->getOpenBugsList() as $bug):?>
+        <li><?php echo $bug['name'] ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
     <?php endif; ?>
     <h1>
       <a href="<?php echo $project->getFullUrl() ?>"><?php echo $project->getName() ?></a>
@@ -24,10 +29,22 @@ $availableTeammates = $infos['availableTeammates'];
     <ul class="stories">
       <?php foreach($project->getMilestones() as $milestone):?>
         <?php if(!$milestone->isPending()) continue;?>
-        <li>
+        <li class="milestone">
           <div class="box title <?php echo $milestone->getOutdated() ? 'outdated' : '' ?>"><a href="<?php echo $milestone->getFullUrl() ?>" class="ellipsis"><?php echo $milestone->getName() ?></a></div>
           <div class="box quote">
             <label><?php echo sprintf('%s / %s', $milestone->getCompletedQuotation(), $milestone->getTotalQuotation()); ?></label>
+            <ul class="tooltip">
+              <?php foreach($milestone->getTodoLists() as $todoList):?>
+              <li>
+                <a href="<?php echo $todoList->getFullUrl() ?>"><?php echo $todoList->getName() ?></a>
+                <ul>
+                  <?php foreach($todoList->getRemainingItems() as $item):?>
+                  <li><?php echo $item['name'] ?></li>
+                  <?php endforeach; ?>
+                </ul>
+              </li>
+              <?php endforeach; ?>
+            </ul>
           </div>
           <div class="box bar <?php echo $milestone->getProgressState() ?>">
             <div class="pourcent" style="width:<?php echo $milestone->getPercentQuotation() ?>%"></div>

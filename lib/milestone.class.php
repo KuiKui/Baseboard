@@ -151,6 +151,16 @@ class milestone
     return $openBugsCount;
   }
 
+  public function getOpenBugsList()
+  {
+    $openBugsList = array();
+    foreach($this->todoLists as $todolist)
+    {
+      $openBugsList += $todolist->getOpenBugsList();
+    }
+    return $openBugsList;
+  }
+
   public function getWorkingTeammates()
   {
     $teammates = array();
@@ -178,6 +188,11 @@ class milestone
   public function getFullUrl()
   {
     return $this->project->getBasecampUrl() . "milestones/" . $this->id . "/comments";
+  }
+
+  public function getTodoLists()
+  {
+    return $this->todoLists;
   }
 
   /**
@@ -330,8 +345,5 @@ class milestone
 
     return $total;
   }
-
-
-
 
 }

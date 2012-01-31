@@ -45,6 +45,29 @@ body {
     .radius (.2em);
     text-transform: uppercase;
 }
+
+.tooltip{
+  display:none;
+  background:#aaa;
+  color:#000;
+  border: .2em solid #444;
+  .radius (.4em);
+  .box-shadow (.2em , .4em);
+  position:absolute;
+  z-index:1;
+  font:normal normal .7em/1.3em serif;
+  text-align: left;
+  text-transform: none;
+  list-style: square inside none;
+  padding:.5em;
+  ul{
+    padding:.5em;
+  }
+  a{
+    color:#000;
+  }
+}
+
     
     #projects {
       display:block;
@@ -68,6 +91,7 @@ body {
         padding: 0 .1em;
         font: bold 1.5em/1.5em sans-serif;
         .radius (.2em);
+        position:relative;
 
         img {
           height:1.2em;
@@ -87,11 +111,18 @@ body {
             padding: 0 .2em;
           }
         }
+
+        ul{
+          right:0;
+          width:40em;
+        }
       }
 
+      .bug:hover ul {
+        display:block
+      }
 
       .project {
-        overflow: auto;
         padding: .4em .6em;
         margin-bottom: 2em;
         background-color: #111;
@@ -100,13 +131,13 @@ body {
         .box-shadow (.2em , .4em);
         
         .stories {
-          overflow: auto;
           list-style: none;
           padding: 0;
 
-            li {
-            overflow: auto;
+            li.milestone {
             font: bold 1em/2em sans-serif;
+            position:relative;
+            height:3.1em;
 
             > div {
               float: left;
@@ -157,6 +188,14 @@ body {
               label {
                 font-size:.8em;
               }
+
+              .tooltip{
+                font-size:1em;
+              }
+            }
+
+            .quote:hover ul {
+              display:block;
             }
             
             .bar {
