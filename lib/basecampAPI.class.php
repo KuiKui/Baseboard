@@ -13,29 +13,18 @@ class basecampAPI
   {
     if($this->restConnection->request($request))
     {
-      return $this->xml2array(simplexml_load_string($this->restConnection->getResponseBody()));
+      $res = $this->xml2array(simplexml_load_string($this->restConnection->getResponseBody()));
+
+      // if there's a result, we don't need the 1st array (container)
+      if(is_array($res) && count($res)>0)
+      {
+        $res = array_values($res);
+        return $res[0];
+      }
     }
     return null;
   }
 
-  protected function xml2array($xml)
-  {
-    $tmp = json_decode(json_encode($xml), true);
-
-    // If xml is a list of entities (type=array)
-    if(array_key_exists('@attributes', $tmp))
-    {
-      $tmp =  array_values(array_slice($tmp, 1, 1));
-
-      if(count($tmp)>0)
-      {
-        return $tmp[0];
-      }
-    }
-
-    return $tmp;
-  }
-  /*
   protected function xml2array($xml)
   {
     $arr = array();
@@ -49,6 +38,6 @@ class basecampAPI
     }
     return $arr;
   }
-  */
+
 
 }
