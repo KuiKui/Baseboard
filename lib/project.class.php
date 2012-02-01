@@ -16,6 +16,7 @@ class project
 
   protected $milestones = array();
   protected $openBugsCount = 0;
+  protected $openBugsList = array();
 
   protected $workdays;
   protected $holidays;
@@ -133,6 +134,24 @@ class project
 
     // return items in "bug" todolist
     return $this->bugsResolvingTeammates;
+  }
+
+  public function getOpenBugsList()
+  {
+    // return bugs that are defined in todoitems
+    if(!$this->fetchBugsFromSpecialTodoList())
+    {
+      $openBugsList = array();
+      foreach($this->milestones as $milestone)
+      {
+        if($milestone->isPending())
+          $openBugsList += $milestone->getOpenBugsList();
+      }
+      return $openBugsList;
+    }
+
+    // return items in "bug" todolist
+    return $this->openBugsList;
   }
 
   public function setWorkdays($workdays)
@@ -315,6 +334,7 @@ class project
       $todoList->loadTodoItems();
       $this->openBugsCount += $todoList->getUncompletedCount();
       $this->bugsResolvingTeammates += $todoList->getWorkingTeammates();
+      $this->openBugsList += $todoList->getRemainingItems();
       return;
     }
 
