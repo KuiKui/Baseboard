@@ -6,7 +6,7 @@ $defaultFontSize = '';
 
 if(isset($config['general']['defaultFontSize']))
 {
-  $defaultFontSize = ' style="font-size:' . ($config['general']['defaultFontSize'] . '"');
+  $defaultFontSize = ' style="font-size:' . ($config['general']['defaultFontSize'] . 'px"');
 }
 ?>
 <!doctype html>

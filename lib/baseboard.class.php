@@ -10,6 +10,7 @@ class Baseboard
     $workingTeammates = array();
     $showAvailableTeammates = true;
     $fitScreen = true;
+    $maxFontSize = 27;
 
     if(isset($config['team']))
     {
@@ -23,6 +24,10 @@ class Baseboard
     if(isset($config['general']['fitScreen']))
     {
       $fitScreen = ($config['general']['fitScreen']=='true');
+    }
+    if(isset($config['general']['maxFontSize']))
+    {
+      $maxFontSize = ($config['general']['maxFontSize']);
     }
 
 
@@ -51,7 +56,8 @@ class Baseboard
     return array(
       'projects' => $projects,
       'availableTeammates' => $availableTeammates,
-      'fitScreen' => $fitScreen
+      'fitScreen' => $fitScreen,
+      'maxFontSize' => $maxFontSize
     );
   }
 

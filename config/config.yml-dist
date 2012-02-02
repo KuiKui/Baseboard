@@ -5,7 +5,8 @@ general:
   hudsonRefreshInterval: 300
   showAvailableTeammates: false
   fitScreen: true
-  defaultFontSize: 20px
+  defaultFontSize: 20
+  maxFontSize: 32
 projects:
   ProjectName:
     basecamp-url: 'https://xxx.basecamphq.com/'
