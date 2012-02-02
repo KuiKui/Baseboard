@@ -38,7 +38,7 @@ class Baseboard
       $project->setHolidays($config['general']['holidays']);
       $project->setTeam($availableTeammates);
       $project->loadMilestones();
-      $project->loadTodoLists('pending');
+      $project->loadTodoLists();
 
       $workingTeammates += $project->getWorkingTeammates();
       $workingTeammates += $project->getBugsResolvingTeammates();
