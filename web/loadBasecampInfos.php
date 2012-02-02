@@ -6,6 +6,7 @@ $infos = Baseboard::loadProjects(sfYaml::load(dirname(__FILE__).'/../config/conf
 $projects = $infos['projects'];
 $availableTeammates = $infos['availableTeammates'];
 $fitScreen = $infos['fitScreen'];
+$maxFontSize = $infos['maxFontSize'];
 ?>
 <?php foreach($projects as $project):?>
   <?php if(!$project->shouldDisplay()) continue; ?>
@@ -75,6 +76,6 @@ $fitScreen = $infos['fitScreen'];
 <?php endif; ?>
 <?php if($fitScreen): ?>
   <script type="text/javascript">
-    $(window).webAdjust({wrapper: $('#projects'), maxFontSize: 27});
+    $(window).webAdjust({wrapper: $('#projects'), maxFontSize: <?php echo $maxFontSize ?>});
   </script>
 <?php endif; ?>
