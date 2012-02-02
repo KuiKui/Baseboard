@@ -2,7 +2,12 @@
 require_once dirname(__FILE__).'/../lib/vendor/Yaml/lib/sfYaml.php';
 
 $config = sfYaml::load(dirname(__FILE__).'/../config/config.yml');
+$defaultFontSize = '';
 
+if(isset($config['general']['defaultFontSize']))
+{
+  $defaultFontSize = ' style="font-size:' . ($config['general']['defaultFontSize'] . '"');
+}
 ?>
 <!doctype html>
 <html>
@@ -18,7 +23,7 @@ $config = sfYaml::load(dirname(__FILE__).'/../config/config.yml');
     <script type="text/javascript" src="js/webAdjust.js"></script>
     <!--<script type="text/javascript" src="js/lib/index.js"></script>-->
   </head>
-<body>
+<body <?php echo $defaultFontSize; ?>>
   <script type="text/javascript">
     $(document).ready(function() {
       var hudsonObject = new Hudson();

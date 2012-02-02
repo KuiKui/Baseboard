@@ -8,11 +8,23 @@ class Baseboard
     $projects = array();
     $availableTeammates = array();
     $workingTeammates = array();
+    $showAvailableTeammates = true;
+    $fitScreen = true;
 
     if(isset($config['team']))
     {
       $availableTeammates = $config['team'];
     }
+
+    if(isset($config['general']['showAvailableTeammates']))
+    {
+      $showAvailableTeammates = ($config['general']['showAvailableTeammates']=='true');
+    }
+    if(isset($config['general']['fitScreen']))
+    {
+      $fitScreen = ($config['general']['fitScreen']=='true');
+    }
+
 
     foreach($config['projects'] as $projectName => $projectProps)
     {
@@ -31,9 +43,15 @@ class Baseboard
 
     $availableTeammates = array_diff_key($availableTeammates, $workingTeammates);
 
+    if(!$showAvailableTeammates)
+    {
+      $availableTeammates = null;
+    }
+
     return array(
       'projects' => $projects,
-      'availableTeammates' => $availableTeammates
+      'availableTeammates' => $availableTeammates,
+      'fitScreen' => $fitScreen
     );
   }
 
