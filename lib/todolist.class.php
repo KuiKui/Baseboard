@@ -160,6 +160,14 @@ class todolist
     return $this->project->getFullUrl() . "/todo_lists/" . $this->id;
   }
 
+  /**
+   * @return bool true if the current todolist contains at least one remainingItem
+   */
+  public function isActive()
+  {
+    return !empty($this->remainingItems);
+  }
+
 
   /**
    * Builds a todolist
@@ -170,6 +178,15 @@ class todolist
   {
     $this->project=$project;
   }
+
+  /**
+   * Return the todolist's name
+   */
+  public function __toString()
+  {
+    return (string) $this->name;
+  }
+
 
   /**
    * Initializes the current todolist given its json basecamp representation

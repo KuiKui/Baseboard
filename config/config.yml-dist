@@ -3,6 +3,9 @@ general:
   holidays: ['25/12/12']
   basecampRefreshInterval: 180
   hudsonRefreshInterval: 300
+  showAvailableTeammates: false
+  fitScreen: true
+  defaultFontSize: 20px
 projects:
   ProjectName:
     basecamp-url: 'https://xxx.basecamphq.com/'
@@ -11,6 +14,7 @@ projects:
     hudson-url: 'http://your_hudson_server/api/'
     hudson-jobs: ['job1', 'job2']
     bug-todolist-name: 'bug'
+    display: 'onlyOnActivity' or 'never' or 'always'
 team:
   _member1_basecamp_user_id_:
     name: member1_displayed_name

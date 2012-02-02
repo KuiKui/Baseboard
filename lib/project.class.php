@@ -14,6 +14,8 @@ class project
   protected $hudsonUrl;
   protected $hudsonJobs;
 
+  protected $display;
+
   protected $milestones = array();
   protected $openBugsCount = 0;
   protected $openBugsList = array();
@@ -63,8 +65,22 @@ class project
       $this->bugTodoListName     = $properties['bug-todolist-name'];
     }
 
+    if(isset($properties['display']))
+    {
+      $this->display     = $properties['display'];
+    }
+
     $this->updateBasecampAPI();
   }
+
+  /**
+   * Return the project's name
+   */
+  public function __toString()
+  {
+    return (string) $this->name;
+  }
+
 
   public function setName($name)
   {
@@ -270,6 +286,38 @@ class project
   }
 
   /**
+   * @return bool true if the current project contains at least one active milestone or one open bug
+   */
+  public function isActive()
+  {
+    foreach($this->milestones as $milestone)
+    {
+      if($milestone->isActive())
+      {
+        return true;
+      }
+    }
+    return $this->openBugsCount>0;
+  }
+
+  /**
+   * @return bool true if we should display the current project
+   */
+  public function shouldDisplay()
+  {
+    if($this->display=="always")
+    {
+      return true;
+    }
+    else if ($this->display=="never")
+    {
+      return false;
+    }
+
+    return $this->isActive();
+  }
+
+  /**
    * Issues a request to basecamp API so as to load all of the project milestones.
    * Obviously, this might lead to load unneeded milestones but depending on your project, it vastly reduces the number
    * of calls to basecamp API, thus improving load time.
@@ -342,7 +390,7 @@ class project
     $milestoneId = $todoList->getMilestoneId();
 
     // No related milestone
-    if(is_array($milestoneId))
+    if(empty($milestoneId))
     {
       return;
     }

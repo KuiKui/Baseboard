@@ -205,6 +205,14 @@ class milestone
     $this->project = $project;
   }
 
+  /**
+   * Return the milestone's name
+   */
+  public function __toString()
+  {
+    return (string) $this->name;
+  }
+
 
   /**
    * Issues a request to basecamp API so as to load a milestone and initializes the properties accordingly
@@ -247,7 +255,7 @@ class milestone
   public function isPending()
   {
     // invalid dates
-    if(is_array($this->startAt) || is_array($this->deadline))
+    if(empty($this->startAt) || empty($this->deadline))
     {
       return false;
     }
@@ -260,6 +268,22 @@ class milestone
 
     return true;
   }
+
+  /**
+   * @return bool true if the current milestone contains at least one active todolist
+   */
+  public function isActive()
+  {
+    foreach($this->todoLists as $todoList)
+    {
+      if($todoList->isActive())
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   /**
    *  Parses a basecamp todolist and updates the milestone properties accordingly
