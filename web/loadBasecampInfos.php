@@ -75,6 +75,6 @@ $fitScreen = $infos['fitScreen'];
 <?php endif; ?>
 <?php if($fitScreen): ?>
   <script type="text/javascript">
-    $(window).webAdjust({wrapper: $('#projects'), maxFontSize: 27});
+    $(window).webAdjust({wrapper: $('#projects'), maxFontSize: 32});
   </script>
 <?php endif; ?>
